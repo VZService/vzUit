@@ -1,1 +1,1 @@
-# vzUit - 由VZService的UI规范
+# vzUit - VZService的UI规范
