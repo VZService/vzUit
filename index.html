@@ -887,21 +887,93 @@
             }
         }
 
+        /* ---------- 汉堡菜单按钮 ---------- */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.2rem;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        .menu-toggle:hover { color: #fff; }
+
+        /* ---------- 右侧抽屉 ---------- */
+        .drawer-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 998;
+        }
+        .drawer-overlay.open { display: block; }
+
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background: #0d0f1a;
+            border-left: 1px solid rgba(255,255,255,0.04);
+            z-index: 999;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .drawer.open { transform: translateX(0); }
+
+        .drawer .drawer-close {
+            align-self: flex-end;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.3);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .drawer .drawer-close:hover { color: #fff; }
+
+        .drawer .drawer-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .drawer .drawer-nav a {
+            display: block;
+            padding: 0.7rem 1rem;
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        .drawer .drawer-nav a:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.04);
+        }
+        .drawer .drawer-nav a.active {
+            color: #a78bfa;
+            background: rgba(167,139,250,0.06);
+        }
+
         @media (max-width: 640px) {
             body {
                 padding: 1rem;
             }
-            .navbar {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 0.8rem;
-            }
-            .nav-links {
-                justify-content: center;
-            }
-            .user-profile {
-                align-self: center;
-            }
+            .menu-toggle { display: inline-block; }
+            .nav-links { display: none; }
+            .user-profile { display: none; }
             .grid-2,
             .grid-3 {
                 grid-template-columns: 1fr;
@@ -935,6 +1007,7 @@
                 <a data-page="theme">主题</a>
                 <a data-page="docs">文档</a>
             </nav>
+            <button class="menu-toggle" id="menuToggle" aria-label="菜单">☰</button>
             <div class="user-profile">
                 <div class="avatar">
                     <span class="avatar-text">JD</span>
@@ -943,6 +1016,18 @@
                 <span>John Doe</span>
             </div>
         </header>
+
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+        <div class="drawer" id="drawer">
+            <button class="drawer-close" id="drawerClose">✕</button>
+            <nav class="drawer-nav">
+                <a class="active" data-page="overview">概览</a>
+                <a data-page="components">组件</a>
+                <a data-page="layout">布局</a>
+                <a data-page="theme">主题</a>
+                <a data-page="docs">文档</a>
+            </nav>
+        </div>
 
         <div class="grid-2" style="margin-bottom: 2rem;">
             <div class="card card-glow float">
@@ -1545,6 +1630,31 @@
 
             console.log('vzUIt 已加载，所有交互已生效 ✓');
 
+        })();
+    </script>
+<script>
+        // 汉堡菜单
+        (function() {
+            var toggle = document.getElementById('menuToggle');
+            var drawer = document.getElementById('drawer');
+            var overlay = document.getElementById('drawerOverlay');
+            var close = document.getElementById('drawerClose');
+            if (!toggle || !drawer) return;
+
+            function open() {
+                drawer.classList.add('open');
+                overlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeDrawer() {
+                drawer.classList.remove('open');
+                overlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            toggle.onclick = open;
+            if (close) close.onclick = closeDrawer;
+            if (overlay) overlay.onclick = closeDrawer;
         })();
     </script>
 </body>
