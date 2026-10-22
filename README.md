@@ -9,11 +9,13 @@ VZService 全站共用的样式、图标与代码规范。一份源文件，多�
 | 路径 | 内容 |
 |---|---|
 | `src/tokens.css` | 设计变量与字体，纯 token，无组件 |
-| `src/vzuit.css` | 完整组件样式，含 token |
+| `src/vzuit.css` | 完整组件样式，用 `@import` 引 tokens.css |
 | `specs/` | 五份规范，见下方索引 |
 | `configs/` | editorconfig 与 biome 配置，各站直接拷 |
 | `tools/build-icons.mjs` | 图标集合成 sprite |
 | `tools/stamp.mjs` | 内容哈希版本戳注入 |
+| `tools/check-tokens.mjs` | 变量、层级、硬编码与基座漂移检查 |
+| `tools/normalize-alpha.mjs` | 白色透明夹值档位归并 |
 | `index.html` | 组件演示页 |
 
 ## 三种引用方式
@@ -62,6 +64,21 @@ npx @biomejs/biome check .
 node tools/build-icons.mjs <图标源目录> icons.svg --split
 node tools/stamp.mjs <站点根目录>
 ```
+
+白色透明的存量收编两步走，先跑同值替换，再跑档位归并：
+
+```bash
+node tools/replace-hardcoded.mjs <站点目录> --dry   # 与 token 完全同值，零视觉变化
+node tools/normalize-alpha.mjs <站点目录> --dry     # 夹值档位，按语义就近归并
+```
+
+接入后拿这两条验收，任一非零就算没接完：
+
+```bash
+node tools/check-tokens.mjs <站点目录> --base src/tokens.css
+```
+
+第一条查未定义变量、字面量 z-index、残留的硬编码白色透明；`--base` 额外比对站点 `:root` 与基座 `tokens.css` 的漂移（缺项、多项、取值不同）。站点没有独立 `tokens.css`、把变量写在组件文件里的，也能直接查。
 
 ## 与源头站的关系
 

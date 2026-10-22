@@ -13,8 +13,8 @@
 | 组 | 变量 | 用途 |
 |---|---|---|
 | 背景 | `--vz-bg` `--vz-deep` `--vz-bg-surface` `--vz-bg-elevated` `--vz-bg-modal` | 页面底、深色底、卡片面、浮起面、弹窗面，按由深到浅使用 |
-| 玻璃 | `--vz-surface` `--vz-glass-2` `--vz-glass-3` `--vz-glass-4` `--vz-glass-8` | 半透明白，叠在深色底上做表面。数值越大越亮 |
-| 边框 | `--vz-border` `--vz-border-1` `--vz-border-2` `--vz-border-3` `--vz-border-hover` `--vz-border-focus` | 1 最弱 3 最强，focus 固定紫 |
+| 玻璃 | `--vz-surface` `--vz-glass-2` `--vz-glass-3` `--vz-glass-4` `--vz-glass-8` `--vz-glass-12` `--vz-glass-15` | 半透明白，叠在深色底上做表面。名字里的数字就是 alpha×100，越大越亮。12 与 15 是斜坡顶端，只用在「已经是 0.06 以上的表面再抬一档」的悬停反馈 |
+| 边框 | `--vz-border-0` `--vz-border` `--vz-border-1` `--vz-border-2` `--vz-border-3` `--vz-border-hover` `--vz-border-focus` | 1 最弱 3 最强，`border-0` 是最弱的发丝线（0.04），focus 固定紫 |
 | 文字 | `--vz-text` `--vz-text-secondary` `--vz-text-tertiary` `--vz-text-disabled` | 四级，一页内不超过三级混用 |
 | 品牌 | `--vz-brand-from` `--vz-brand-to` `--vz-primary` `--vz-primary-2` `--vz-primary-gradient` | 渐变固定 135 度，起止色不许换向 |
 | 色阶 | `--vz-brand-1` 到 `--vz-brand-10` | 只在需要色阶对比的图表与徽标里用 |
@@ -78,3 +78,18 @@
 | `border-radius: 60px` | `var(--vz-radius-pill)` |
 | `z-index: 99999` 或 `1000` | `var(--vz-z-overlay)` |
 | `transition: all 0.2s` | `transition: all var(--vz-dur-fast)` |
+
+## 白色透明归并表
+
+上表只收「与 token 完全同值」的档位，视觉必然零变化，由 `tools/replace-hardcoded.mjs` 批量处理。剩下的夹值档位由 `tools/normalize-alpha.mjs` 按属性语义就近归并，视觉有 ≤0.08 alpha 的轻微差异，属于有意的档位收敛。
+
+| 属性 | 原值 | 归到 |
+|---|---|---|
+| 背景 / 渐变 / 阴影 | 0.02 / 0.03 / 0.04 / 0.05 / 0.08 / 0.12 / 0.15 | glass 斜坡：`surface` / `glass-2` / `glass-3` / `glass-4` / `glass-8` / `glass-12` / `glass-15` |
+| 悬停态背景 | 0.04 / 0.08 | `surface-hover` / `surface-raised` |
+| 边框 | 0.03 / 0.04 / 0.05 / 0.06 / 0.08 / 0.10 / 0.15 | `border-0` / `border-0` / `border-0` / `border-1` / `border-2`（悬停下用 `border-hover`）/ `border` / `border-3` |
+| 文字 | 0.20–0.32 / 0.40–0.50 / 0.60–0.75 | `text-disabled` / `text-tertiary` / `text-secondary` |
+
+判断依据是属性名，不是出现位置：`color` `fill` `stroke` 走文字档，`border-*` `outline-*` 走边框档，其余走表面档。脚本按当前选择器是否含 `:hover` `.active` `.open` `.show` `:focus` 区分静态与悬停。
+
+例外：脚本里拼出来的内联样式字符串、SVG 呈现属性（`fill="rgba(...)"` 不能吃 `var()`）、第三方库覆盖样式，这三类不在自动归并范围内，需要在改动处加注释说明来源。

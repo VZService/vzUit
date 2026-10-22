@@ -45,16 +45,19 @@
   --vz-bg-surface: #141828;
   --vz-bg-elevated: #1a1f33;
 
-  /* 玻璃层，白色透明，用于卡片与控件表面 */
+  /* 玻璃层，白色透明，用于卡片与控件表面。数值即 alpha×100，越大越亮 */
   --vz-surface: rgba(255,255,255,0.02);
   --vz-glass-2: rgba(255,255,255,0.03);
   --vz-glass-3: rgba(255,255,255,0.04);
   --vz-glass-4: rgba(255,255,255,0.05);
   --vz-glass-8: rgba(255,255,255,0.08);
+  --vz-glass-12: rgba(255,255,255,0.12);
+  --vz-glass-15: rgba(255,255,255,0.15);
   --vz-surface-hover: rgba(255,255,255,0.04);
   --vz-surface-raised: rgba(255,255,255,0.08);
 
   /* 边框 */
+  --vz-border-0: rgba(255,255,255,0.04);
   --vz-border: rgba(255,255,255,0.10);
   --vz-border-1: rgba(255,255,255,0.06);
   --vz-border-2: rgba(255,255,255,0.08);
