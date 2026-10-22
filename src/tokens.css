@@ -1,0 +1,153 @@
+/* vzUit 设计 token 唯一来源
+   只放变量与字体声明，不含任何组件类与业务样式。
+   需要完整组件时引用 vzuit.css，只需要颜色/字号/间距时引用本文件。
+
+   字体策略：CDN 为主，本地同路径兜底。各站无需自带字体文件。
+   两种字体分工固定：--vz-font 用于官网与营销页展示（得意黑），--vz-font-ui 用于界面正文与组件（Inter 栈）。 */
+
+@font-face {
+  font-family: 'SmileySans';
+  src: url('https://cdn.jsdelivr.net/npm/@fontpkg/smiley-sans@2.0.4/SmileySans-Oblique.otf.woff2') format('woff2'),
+       url('/fonts/SmileySans-Oblique.otf.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  font-synthesis-weight: none;
+  size-adjust: 100%;
+}
+
+:root {
+  /* 字体栈 */
+  --vz-font: 'SmileySans', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  --vz-font-ui: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --vz-font-mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
+
+  /* 字号梯度，只允许用这八级 */
+  --vz-fs-12: 12px;
+  --vz-fs-14: 14px;
+  --vz-fs-16: 16px;
+  --vz-fs-20: 20px;
+  --vz-fs-24: 24px;
+  --vz-fs-30: 30px;
+  --vz-fs-38: 38px;
+  --vz-fs-46: 46px;
+
+  /* 字重，只允许用这四级 */
+  --vz-fw-regular: 400;
+  --vz-fw-medium: 500;
+  --vz-fw-semibold: 600;
+  --vz-fw-bold: 700;
+
+  /* 背景与表面 */
+  --vz-bg: #080b14;
+  --vz-deep: #0d0f1a;
+  --vz-bg-modal: #11142a;
+  --vz-bg-surface: #141828;
+  --vz-bg-elevated: #1a1f33;
+
+  /* 玻璃层，白色透明，用于卡片与控件表面 */
+  --vz-surface: rgba(255,255,255,0.02);
+  --vz-glass-2: rgba(255,255,255,0.03);
+  --vz-glass-3: rgba(255,255,255,0.04);
+  --vz-glass-4: rgba(255,255,255,0.05);
+  --vz-glass-8: rgba(255,255,255,0.08);
+  --vz-surface-hover: rgba(255,255,255,0.04);
+  --vz-surface-raised: rgba(255,255,255,0.08);
+
+  /* 边框 */
+  --vz-border: rgba(255,255,255,0.10);
+  --vz-border-1: rgba(255,255,255,0.06);
+  --vz-border-2: rgba(255,255,255,0.08);
+  --vz-border-3: rgba(255,255,255,0.15);
+  --vz-border-hover: rgba(255,255,255,0.08);
+  --vz-border-focus: rgba(167,139,250,0.30);
+
+  /* 文字，四级加纯白 */
+  --vz-text: #eef2f8;
+  --vz-text-secondary: rgba(255,255,255,0.62);
+  --vz-text-tertiary: rgba(255,255,255,0.48);
+  --vz-text-disabled: rgba(255,255,255,0.32);
+  --vz-white: #fff;
+
+  /* 品牌渐变，紫到靛蓝 */
+  --vz-brand-from: #a78bfa;
+  --vz-brand-to: #38bdf8;
+  --vz-brand-accent: #a78bfa;
+  --vz-primary: #7c3aed;
+  --vz-primary-2: #6d28d9;
+  --vz-primary-gradient: linear-gradient(135deg, #7c3aed, #4f46e5);
+  --vz-primary-gradient-active: linear-gradient(135deg, #6d28d9, #4338ca);
+
+  /* 品牌紫色阶，1 最浅 10 最深 */
+  --vz-brand-1:  #f3e8ff;
+  --vz-brand-2:  #e9d5ff;
+  --vz-brand-3:  #d8b4fe;
+  --vz-brand-4:  #c4b5fd;
+  --vz-brand-5:  #a78bfa;
+  --vz-brand-6:  #7c3aed;
+  --vz-brand-7:  #6d28d9;
+  --vz-brand-8:  #5b21b6;
+  --vz-brand-9:  #4f46e5;
+  --vz-brand-10: #2e1065;
+
+  /* 功能色 */
+  --vz-success: #10b981;
+  --vz-success-2: #059669;
+  --vz-success-grad: linear-gradient(135deg, #10b981, #059669);
+  --vz-info: #38bdf8;
+  --vz-warning: #fb923c;
+  --vz-error: #f43f5e;
+  --vz-danger: #f43f5e;
+  --vz-danger-2: #e11d48;
+
+  /* 标签类别色 */
+  --vz-tag-purple: #a78bfa;
+  --vz-tag-blue: #38bdf8;
+  --vz-tag-green: #34d399;
+  --vz-tag-pink: #f472b6;
+  --vz-tag-orange: #fb923c;
+
+  /* 间距，4px 基准，只允许这六级 */
+  --vz-space-1: 4px;
+  --vz-space-2: 8px;
+  --vz-space-3: 12px;
+  --vz-space-4: 16px;
+  --vz-space-5: 24px;
+  --vz-space-6: 32px;
+
+  /* 圆角，按组件语义分配，不按数值命名新项 */
+  --vz-radius-progress: 10px;
+  --vz-radius-sm: 12px;
+  --vz-radius-input: 14px;
+  --vz-radius-toast: 16px;
+  --vz-radius: 20px;
+  --vz-radius-lg: 24px;
+  --vz-radius-xl: 32px;
+  --vz-radius-tag: 40px;
+  --vz-radius-pill: 60px;
+
+  /* 阴影与光晕 */
+  --vz-shadow-card: 0 20px 60px rgba(0,0,0,0.30);
+  --vz-shadow-glow: 0 20px 60px rgba(88,60,250,0.08);
+  --vz-shadow-primary: 0 8px 24px rgba(124,58,237,0.20);
+  --vz-shadow-primary-hover: 0 12px 32px rgba(124,58,237,0.30);
+  --vz-shadow-success: 0 8px 24px rgba(16,185,129,0.20);
+  --vz-shadow-success-hover: 0 12px 32px rgba(16,185,129,0.30);
+  --vz-shadow-modal: 0 40px 80px rgba(0,0,0,0.60);
+  --vz-shadow-toast: 0 12px 40px rgba(0,0,0,0.40);
+
+  /* 层级，四层封顶，组件内不得出现更大数值 */
+  --vz-z-overlay: 1000;
+  --vz-z-drawer: 1001;
+  --vz-z-modal: 1010;
+  --vz-z-toast: 1100;
+
+  /* 过渡时长，组件内用这三档，不写字面量 */
+  --vz-dur-fast: .15s;
+  --vz-dur: .25s;
+  --vz-dur-slow: .28s;
+
+  /* 焦点环与行高 */
+  --vz-focus-ring: 0 0 0 2px #080b14, 0 0 0 4px #c4b5fd;
+  --vz-line: 1.7;
+}

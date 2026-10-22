@@ -1,0 +1,14 @@
+{
+  "name": "vzuit",
+  "version": "1.1.0",
+  "private": true,
+  "description": "VZService 统一标准：设计 token、组件、图标与代码规范",
+  "type": "module",
+  "scripts": {
+    "check": "node tools/check-tokens.mjs src",
+    "icons": "node tools/build-icons.mjs icons icons-ui.svg --split",
+    "stamp": "node tools/stamp.mjs",
+    "normalize": "node tools/replace-hardcoded.mjs"
+  },
+  "license": "MIT"
+}
