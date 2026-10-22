@@ -150,6 +150,10 @@
   --vz-dur: .25s;
   --vz-dur-slow: .28s;
 
+  /* 组件可变点：站点皮肤只改这几个，不用覆写组件类 */
+  --vz-seg-on-bg: var(--vz-glass-12);
+  --vz-seg-on-color: var(--vz-text);
+
   /* 焦点环与行高 */
   --vz-focus-ring: 0 0 0 2px #080b14, 0 0 0 4px #c4b5fd;
   --vz-line: 1.7;

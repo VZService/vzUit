@@ -40,7 +40,8 @@ function main() {
   const argv = process.argv.slice(2);
   const baseIdx = argv.indexOf('--base');
   const base = baseIdx >= 0 ? path.resolve(argv[baseIdx + 1]) : null;
-  const target = argv.find((a, i) => !a.startsWith('--') && i !== baseIdx + 1);
+  const skip = baseIdx >= 0 ? baseIdx + 1 : -1;
+  const target = argv.find((a, i) => !a.startsWith('--') && i !== skip);
   const root = path.resolve(target || 'src');
   const files = walk(root, []);
 

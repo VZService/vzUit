@@ -1,0 +1,38 @@
+/* 分段选项卡：一组互斥选项，当前项高亮。
+   设置类界面里的「开/关」「主题」这类二选一到六选一，一律用它，不要用图标 toggle：
+   图标 toggle 表达的是布尔状态，多选项塞进 toggle 语义就错了。 */
+.vz-seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--vz-surface);
+  border: 1px solid var(--vz-border);
+  border-radius: var(--vz-radius-sm);
+}
+.vz-seg button {
+  border: 0;
+  background: none;
+  font-family: var(--vz-font-ui);
+  font-size: var(--vz-fs-14);
+  font-weight: var(--vz-fw-semibold);
+  color: var(--vz-text-tertiary);
+  padding: 6px 14px;
+  border-radius: calc(var(--vz-radius-sm) - 3px);
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 0;
+  transition: background var(--vz-dur-fast), color var(--vz-dur-fast);
+}
+.vz-seg button:hover { color: var(--vz-text-secondary); }
+.vz-seg button.on {
+  background: var(--vz-seg-on-bg);
+  color: var(--vz-seg-on-color);
+}
+.vz-seg button:focus-visible {
+  outline: 2px solid var(--vz-border-focus);
+  outline-offset: 1px;
+}
+.vz-seg.vz-seg-locked button { opacity: .45; cursor: not-allowed; }

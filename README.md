@@ -9,7 +9,8 @@ VZService 全站共用的样式、图标与代码规范。一份源文件，多�
 | 路径 | 内容 |
 |---|---|
 | `src/tokens.css` | 设计变量与字体，纯 token，无组件 |
-| `src/vzuit.css` | 完整组件样式，用 `@import` 引 tokens.css |
+| `src/vzuit.css` | 完整组件样式，用 `@import` 引 tokens.css 与 components/ |
+| `src/components/` | 可单独引用的组件，文件名即组件名，全部 `vz-` 前缀 |
 | `specs/` | 五份规范，见下方索引 |
 | `configs/` | editorconfig 与 biome 配置，各站直接拷 |
 | `tools/build-icons.mjs` | 图标集合成 sprite |
