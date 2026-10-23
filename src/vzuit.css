@@ -713,7 +713,7 @@ html.js-ready input:not([type="submit"]):not([type="button"]):not([type="checkbo
 .vz-hint-sm { text-align:center;margin-top:1rem;font-size:0.85rem;color:var(--vz-text-tertiary); }
 
 /* 无障碍与体验增强（UI 评审 2026-08-06） */
-/* P0-4：JS 挂了也别永远 Loading —— 4s 兜底自动隐藏遮罩 */
+/* P0-4：JS 挂了也别永远 Loading，4s 兜底自动隐藏遮罩 */
 .loading-screen { animation: vzFailSafe 0s linear 4s forwards; }
 @keyframes vzFailSafe { to { opacity: 0; pointer-events: none; visibility: hidden; } }
 
@@ -728,7 +728,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   box-shadow: 0 0 0 3px rgba(167,139,250,0.22);
 }
 
-/* P2-4：动效偏好 —— 前庭敏感用户退路 */
+/* P2-4：动效偏好，前庭敏感用户退路 */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
