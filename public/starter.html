@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>接入样板 · vzUit</title>
+<!-- 新站接入照这份抄。三件事：引 tokens、引组件、挂 core 运行时。
+     tokens.css 是变量的唯一来源，vzuit.css 已经 @import 了它，只引 vzuit.css 就够；
+     下面把 tokens 单独列出来，是给「只想要变量不要整片样式」的站点看的。 -->
+<link rel="stylesheet" href="../src/tokens.css">
+<link rel="stylesheet" href="../src/vzuit.css">
+<style>
+  /* 站点自己的布局样式写在这里，不要往 vzuit.css 里加站点专属规则 */
+  .wrap { max-width: 880px; margin: 0 auto; padding: 2rem 1.2rem 4rem; }
+  .lead { color: var(--vz-text-secondary); font-size: var(--vz-fs-14); line-height: 1.8; margin-bottom: 1.6rem; }
+  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .card { background: var(--vz-surface); border: 1px solid var(--vz-border-1); border-radius: var(--vz-radius-lg); padding: 1.2rem 1.3rem; }
+  .card h2 { font-size: var(--vz-fs-15); color: var(--vz-text); margin-bottom: .7rem; font-weight: var(--vz-fw-semibold); }
+  .card p { font-size: var(--vz-fs-13); color: var(--vz-text-tertiary); line-height: 1.7; margin-bottom: .9rem; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; }
+  .stack { display: flex; flex-direction: column; gap: .8rem; }
+  .vz-input { width: 100%; padding: .62rem .9rem; background: var(--vz-glass-3); border: 1px solid var(--vz-border-2); border-radius: var(--vz-radius-input); color: var(--vz-text); font-family: var(--vz-font-ui); font-size: var(--vz-fs-14); }
+  .vz-input:focus { outline: 2px solid var(--vz-border-focus); outline-offset: 1px; border-color: transparent; }
+  .tagline { font-size: var(--vz-fs-12); color: var(--vz-text-tertiary); margin-top: .8rem; }
+  code { font-family: var(--vz-font-mono); font-size: .86em; background: var(--vz-glass-4); padding: .1em .4em; border-radius: 6px; color: var(--vz-text-secondary); }
+</style>
+</head>
+<body>
+
+<div id="vzHeader"></div>
+
+<div class="wrap">
+  <h1 style="font-size: var(--vz-fs-24); margin-bottom: .6rem;">接入样板</h1>
+  <p class="lead">
+    这份页面只做一件事：把「引进来能用」的最小结构摊开。三个 <code>&lt;link&gt;</code> 与一个
+    <code>&lt;script&gt;</code> 之后，下面所有控件都不需要再写样式。新站复制这套引用顺序即可，
+    布局与业务规则各站自己写。
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h2>按钮与输入</h2>
+      <p>按钮用站点自己的类名也行，只要取的是 <code>--vz-*</code> 变量；输入框建议直接抄下面这组。</p>
+      <div class="stack">
+        <input class="vz-input" placeholder="输入点什么">
+        <div class="row">
+          <button class="vz-modal-btn primary">主按钮</button>
+          <button class="vz-modal-btn">次按钮</button>
+          <button class="vz-modal-btn danger">危险</button>
+        </div>
+      </div>
+      <div class="tagline">圆角、间距、颜色全部来自 token，换皮肤只改 tokens.css。</div>
+    </div>
+
+    <div class="card">
+      <h2>布尔用开关，多选用分段</h2>
+      <p>只有开与关的项用 <code>.vz-switch</code>；一组互斥选项用 <code>.vz-seg</code>。别把开/关做成两枚选项卡。</p>
+      <div class="stack">
+        <div class="row">
+          <button class="vz-switch on" role="switch" aria-checked="true" id="swSound">
+            <span class="vz-switch-ico">
+              <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+            </span>
+            <span class="vz-switch-track"><i></i></span>
+          </button>
+          <span style="font-size: var(--vz-fs-13); color: var(--vz-text-secondary);" id="swLabel">声音已开</span>
+        </div>
+        <div class="vz-seg" id="segTheme">
+          <button class="on">暗色</button>
+          <button>亮色</button>
+          <button>跟随系统</button>
+        </div>
+      </div>
+      <div class="tagline">开关的轨道位置才是状态，图标只是功能标识。键盘操作用 <code>role="switch"</code> 与 Space 补齐。</div>
+    </div>
+
+    <div class="card">
+      <h2>弹窗与加载圈</h2>
+      <p>core 段自带 <code>VZAlert</code> / <code>VZConfirm</code>，退场动画播完才移除 DOM，不需要各站再写一套。</p>
+      <div class="row">
+        <button class="vz-modal-btn primary" id="btnAlert">提示一下</button>
+        <button class="vz-modal-btn" id="btnConfirm">问一句</button>
+        <button class="vz-modal-btn" id="btnLoading">转两秒</button>
+      </div>
+      <div class="tagline">返回值都是 Promise：<code>await VZConfirm('确定删除？')</code> 拿到 true 或 false。</div>
+    </div>
+
+    <div class="card">
+      <h2>文本与时间</h2>
+      <p>渲染用户内容一律先过 <code>VZCore.escapeHtml</code>，Markdown 走 <code>simpleMd</code>，时间用 <code>formatDate</code> 统一到东八区。</p>
+      <div class="stack" style="font-size: var(--vz-fs-13); color: var(--vz-text-secondary);">
+        <div id="mdOut"></div>
+        <div>格式化时间：<span class="mono" id="timeOut"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="lead" style="margin-top: 1.6rem;">
+    页眉页脚的导航清单由站点传入，core 里不写死任何站的板块：<br>
+    <code>VZCore.setup({ nav: [{ href: '/', label: '主页', id: 'home' }], footer: [{ href: '/about', label: '关于', id: 'about' }] })</code>
+    然后调用 <code>VZCore.renderShell()</code>，它填充 <code>#vzHeader</code> 与 <code>#vzFooter</code>，
+    同一份内容重复调用不会重建 DOM。
+  </p>
+</div>
+
+<div id="vzFooter"></div>
+
+<script src="../src/vzuit-core.js"></script>
+<script>
+(function () {
+  var C = window.VZCore;
+
+  /* 外壳：导航数据由站点给 */
+  C.setup({
+    brand: { name: 'vzUit', href: '/', logo: '' },
+    nav: [{ href: '/', label: '样板', id: 'home' }, { href: '/specs', label: '规范', id: 'specs' }],
+    footer: [{ href: '/specs/05-adopt.md', label: '接入清单', id: 'adopt' }]
+  });
+  C.renderShell();
+
+  /* 开关 */
+  var sw = document.getElementById('swSound');
+  var swLabel = document.getElementById('swLabel');
+  sw.addEventListener('click', function () {
+    var on = sw.classList.toggle('on');
+    sw.setAttribute('aria-checked', on ? 'true' : 'false');
+    swLabel.textContent = on ? '声音已开' : '声音已关';
+  });
+
+  /* 分段 */
+  var seg = document.getElementById('segTheme');
+  seg.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    [].forEach.call(seg.querySelectorAll('button'), function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+  });
+
+  /* 弹窗与加载圈 */
+  document.getElementById('btnAlert').onclick = function () {
+    C.VZAlert('这是一条提示。弹窗退场动画播完才会从 DOM 里移除。');
+  };
+  document.getElementById('btnConfirm').onclick = async function () {
+    var ok = await C.VZConfirm('确认要继续吗？');
+    C.VZAlert(ok ? '你点了确定。' : '你取消了。');
+  };
+  document.getElementById('btnLoading').onclick = function () {
+    C.showLoading();
+    setTimeout(C.hideLoading, 2000);
+  };
+
+  /* 文本与时间 */
+  document.getElementById('mdOut').innerHTML = C.simpleMd('**加粗** 与 [链接](https://example.com)\n\n- 列表项一\n- 列表项二');
+  document.getElementById('timeOut').textContent = C.formatDate('2026-10-23 10:00:00');
+})();
+</script>
+</body>
+</html>

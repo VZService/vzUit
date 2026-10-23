@@ -41,6 +41,12 @@
 
 新增函数必须落在其中一层，并在文件头部的分节注释里登记。跨站引用时只取 core 段，site 段各站自己写。这个拆分不做一次性重构，后续改造时按函数逐个搬。
 
+2026-10-23 现状：core 段已抽成 `src/vzuit-core.js`，IIFE 挂到 `window.VZCore`，导出 `escapeHtml` `inlineMd` `hasMarkdownSyntax` `simpleMd` `formatDate` `showLoading` `hideLoading` `modalOpen` `modalClose` `VZAlert` `VZConfirm`，外壳另有 `setup` 与 `renderShell`。函数体逐字取自 CF_vzs 的 `public/vzuit.js`，行为与源头站一致。
+
+外壳的边界：导航与页脚链接由站点用 `setup({ nav, footer, brand })` 传入，core 不写死任何站的板块清单；页眉右侧只留一个空的 `#userMenu` 位置，登录态、移动端抽屉、用户菜单交给站点自己接，那些依赖本站接口，属 site 层。重复调用 `renderShell()` 不会重建 DOM。
+
+源头站仍用自己那份，切换按站逐个做，不做批量替换。新站直接引 core，不要再抄一份函数进来。
+
 ## 注释
 
 注释用中文。分节用「注释符 + 空格 + 标题」，例如 `/* 弹窗显隐 */`。不用减号或等号画横线做分隔。涉及取舍的注释要写清为什么这样做，不写「这里很复杂」这类无信息量的话。

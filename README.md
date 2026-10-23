@@ -11,6 +11,8 @@ VZService 全站共用的样式、图标与代码规范。一份源文件，多�
 | `src/tokens.css` | 设计变量与字体，纯 token，无组件 |
 | `src/vzuit.css` | 完整组件样式，用 `@import` 引 tokens.css 与 components/ |
 | `src/components/` | 可单独引用的组件，文件名即组件名，全部 `vz-` 前缀 |
+| `src/vzuit-core.js` | UI 运行时 core 段，弹窗、加载圈、转义、轻量 Markdown、页眉页脚外壳，只依赖 DOM |
+| `public/starter.html` | 接入样板，新站照这份抄引用顺序与控件结构 |
 | `specs/` | 五份规范，见下方索引 |
 | `configs/` | editorconfig 与 biome 配置，各站直接拷 |
 | `tools/build-icons.mjs` | 图标集合成 sprite |
@@ -31,6 +33,17 @@ VZService 全站共用的样式、图标与代码规范。一份源文件，多�
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/VZService/vzUit@main/src/vzuit.css">
+```
+
+需要 UI 运行时（弹窗、加载圈、转义、页眉页脚外壳）：
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/VZService/vzUit@main/src/vzuit-core.js"></script>
+<script>
+  VZCore.setup({ nav: [{ href: '/', label: '主页', id: 'home' }], footer: [] });
+  VZCore.renderShell();
+  VZCore.VZConfirm('确定吗？').then(function (ok) { /* ok 为 true 或 false */ });
+</script>
 ```
 
 需要图标（功能图标与题材图标分两份，按需引其一）：
@@ -74,6 +87,12 @@ node tools/normalize-alpha.mjs <站点目录> --dry     # 夹值档位，按语�
 ```
 
 接入后拿这两条验收，任一非零就算没接完：
+
+```bash
+node tools/check-tokens.mjs <站点目录> --base src/tokens.css
+```
+
+扫样板页这类「变量靠外链引入、页内不定义」的文件时，check-tokens 会把它引用的每个变量都报成未定义，这是脚本按目录找定义文件的预期行为。判断样板页本身有没有问题，看浏览器实测结果，别拿单扫 `public/` 的输出当结论。
 
 ```bash
 node tools/check-tokens.mjs <站点目录> --base src/tokens.css
