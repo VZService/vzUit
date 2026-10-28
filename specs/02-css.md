@@ -64,13 +64,29 @@
 | 只有开与关（音效、通知、自动登录） | `.vz-switch` 图标开关，图标表示功能，轨道位置表示状态 | 两个按钮拼的「开/关」选项卡；纯文字开关 |
 | 二选一到六选一（主题、语言、模式） | `.vz-seg` 分段选项卡 | 图标 toggle；下拉框（选项少时下拉多一次点击） |
 | 连续或多档数值 | `input[type=range]` 或步进器 | 分段选项卡塞七八项 |
+| 操作结果反馈（保存成功、上传失败） | `.vz-toast` 配 `VZCore.VZToast` | 弹窗；自造浮层；`alert()` |
 
 判断依据是「这组选项是不是互斥的多个取值」，不是「界面上看起来像不像开关」。把开/关做成两个选项的分段选项卡，等于让用户读一遍两个词再决定点哪个，比拨一下开关慢；反过来把主题三选一做成图标 toggle，语义直接错掉。
+
+## 反馈用哪一层
+
+三层的分工按「要不要打断」分，不按重要程度分：
+
+| 场景 | 用 | 关键行为 |
+|---|---|---|
+| 只要告知，用户不必回应 | `.vz-toast` + `VZToast` | 底部居中，3 秒消失，最多并存三条，悬停暂停计时 |
+| 需要用户确认、选择或填内容 | 弹窗 `VZAlert` / `VZConfirm` | 遮罩阻断，等用户给出结果再继续 |
+| 整页等待，期间不能操作 | `showLoading` | 全屏遮罩，处理完必须调 `hideLoading` |
+
+同一件事不要连开两层。保存失败用一条 toast 说清原因，不要在 toast 之上再弹一个「失败」的弹窗。
+
+轻提示的文案是给用户看的结果，不写错误码与技术栈信息；需要排查的细节打日志。
 
 两个组件都可单独引用，不引整套样式时：
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/VZService/vzUit@main/src/components/switch.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/VZService/vzUit@main/src/components/toast.css">
 ```
 
 高亮色不要覆写组件类，改 `--vz-seg-on-bg` 与 `--vz-seg-on-color` 这两个可变点，开关的开态跟着 `--vz-primary` 走。

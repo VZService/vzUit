@@ -2,11 +2,12 @@
    只依赖 DOM，不碰任何站点接口，跨站可以直接单引。
    site 段（登录、验证码、公告、打赏、内容注入）留在各站自己的脚本里，不进本文件。
 
-   本文件分五节：
+   本文件分六节：
      HTML 转义与轻量 Markdown
      时间格式化
      加载圈
      弹窗
+     轻提示
      页眉页脚外壳
 
    用法：
@@ -196,6 +197,206 @@
     });
   }
 
+  /* 轻提示
+     只做「告诉用户结果」，不做阻断。需要用户确认的走 VZAlert / VZConfirm。
+     同一批操作连点时会堆一列，所以给了两件事：最多并存三条，超过关掉最旧的；
+     传同一个 key 的提示只刷新那一条，不新增。
+     鼠标悬停或键盘把焦点移进提示条时暂停计时，离开后接着走完剩余时长，
+     否则长文案还没读完就消失了。 */
+
+  var toastLayer = null;
+  var toastSeq = 0;
+  var toastList = [];
+  var TOAST_MAX = 3;
+  var TOAST_MS = 3000;
+  var TOAST_LEAVE_MS = 250;   /* 与 toast.css 里 .vz-toast 的 --vz-dur 过渡时长一致 */
+
+  /* 图标取自 src/../icons/8-ui，path 与 viewBox 原样搬，保证与其他地方同一套造型 */
+  var TOAST_ICON = {
+    info: {
+      box: '1.82 1.85 6.35 6.35',
+      path: '<path d="M5.7 6.66c0 .15.076.29.2.373l.14.093A.587.587 0 0 1 5.713 8.2H4.286a.586.586 0 0 1-.325-1.074l.139-.093a.45.45 0 0 0 .2-.373v-.832c0-.058 0-.088-.003-.115a.5.5 0 0 0-.176-.328 1 1 0 0 0-.094-.067l-.066-.044A.587.587 0 0 1 4.286 4.2h.274c.508 0 .762 0 .93.144a1 1 0 0 1 .066.066c.144.169.144.423.144.93zm-.8-4.81a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6"/>'
+    },
+    success: {
+      box: '1.85 1.86 6.29 6.29',
+      path: '<path d="M6.956 2.905a.7.7 0 0 1 .989.99l-3.2 3.2a.7.7 0 0 1-.99 0l-1.7-1.7a.7.7 0 0 1 .99-.99l.265.264c.419.419.628.628.886.649a1 1 0 0 0 .11 0c.257-.02.466-.23.885-.649z"/>'
+    },
+    warning: {
+      box: '1.75 1.75 6.50 6.50',
+      path: '<path d="M4.2 7.45a.8.8 0 1 1 1.6 0 .8.8 0 0 1-1.6 0M4 2.65c0-.442.358-.9 1-.9s1 .458 1 .9-.2 2.058-.3 2.5-.258.8-.7.8-.6-.358-.7-.8S4 3.092 4 2.65"/>'
+    },
+    danger: {
+      box: '1.75 1.75 6.50 6.50',
+      path: '<path d="M3.4 6.65a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6m3.2 0a.8.8 0 1 1 0 1.601.8.8 0 0 1 0-1.6m-3.2-4.9c.642 0 1 .459 1 .9 0 .443-.2 2.059-.3 2.5-.1.442-.258.8-.7.8s-.6-.358-.7-.8c-.1-.441-.3-2.057-.3-2.5 0-.441.359-.9 1-.9m3.2 0c.641 0 1 .459 1 .9 0 .443-.2 2.059-.3 2.5-.1.442-.259.8-.7.8-.442 0-.6-.358-.7-.8-.1-.441-.3-2.057-.3-2.5 0-.441.358-.9 1-.9"/>'
+    }
+  };
+  var TOAST_ICON_KEYS = ['info', 'success', 'warning', 'danger'];
+  var TOAST_CLOSE_PATH = '<path d="M6.344 2.667a.7.7 0 0 1 .99.99l-.538.537c-.359.359-.538.538-.556.759a1 1 0 0 0 0 .094c.018.22.197.4.556.76l.538.537a.701.701 0 0 1-.99.989l-.538-.538c-.36-.359-.539-.538-.76-.555a1 1 0 0 0-.093 0c-.221.017-.4.196-.76.555l-.537.538a.7.7 0 0 1-.99-.99l.538-.537c.36-.359.539-.538.556-.759a1 1 0 0 0 0-.094c-.017-.22-.197-.4-.556-.76l-.537-.537a.7.7 0 1 1 .989-.989l.538.538c.359.359.538.538.759.555a1 1 0 0 0 .094 0c.22-.017.4-.196.759-.555z"/>';
+
+  function toastLayerEl() {
+    if (!toastLayer) {
+      toastLayer = document.createElement('div');
+      toastLayer.className = 'vz-toast-layer';
+      /* 播报交给容器，单条不再挂 aria-live，避免两条同时出现抢读 */
+      toastLayer.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toastLayer);
+    }
+    return toastLayer;
+  }
+
+  function toastTiming(item, ms) {
+    item.remain = ms;
+    item.startedAt = Date.now();
+    item.timer = setTimeout(function () { toastClose(item); }, ms);
+  }
+
+  function toastHold(item) {
+    if (!item.timer) return;
+    clearTimeout(item.timer);
+    item.timer = null;
+    /* 留 800ms 底，鼠标划过一下回来也不至于立刻消失 */
+    item.remain = Math.max(800, item.remain - (Date.now() - item.startedAt));
+  }
+
+  function toastResume(item) {
+    if (item.timer || item.closing || !item.remain) return;
+    toastTiming(item, item.remain);
+  }
+
+  function toastClose(item) {
+    if (!item || item.closing) return;
+    item.closing = true;
+    if (item.timer) { clearTimeout(item.timer); item.timer = null; }
+    item.el.classList.remove('show');
+    item.el.classList.add('leaving');
+    var dropped = false;
+    function drop() {
+      if (dropped) return;
+      dropped = true;
+      if (item.el.parentNode) item.el.parentNode.removeChild(item.el);
+      var at = toastList.indexOf(item);
+      if (at > -1) toastList.splice(at, 1);
+    }
+    item.el.addEventListener('transitionend', function (e) {
+      if (e.target === item.el && e.propertyName === 'opacity') drop();
+    });
+    setTimeout(drop, TOAST_LEAVE_MS + 80);
+  }
+
+  function toastSkin(item, type) {
+    TOAST_ICON_KEYS.forEach(function (k) { item.el.classList.remove('vz-toast-' + k); });
+    item.el.classList.add('vz-toast-' + type);
+    item.icoEl.innerHTML = '<svg viewBox="' + TOAST_ICON[type].box + '" aria-hidden="true">' +
+      TOAST_ICON[type].path + '</svg>';
+    item.el.setAttribute('role', type === 'danger' ? 'alert' : 'status');
+    item.type = type;
+  }
+
+  function toastShow(msg, opts) {
+    if (!msg && msg !== 0) return null;
+    var o = opts || {};
+    var type = TOAST_ICON[o.type] ? o.type : 'info';
+    var duration = typeof o.duration === 'number' ? o.duration : TOAST_MS;
+    var key = o.key ? String(o.key) : '';
+
+    /* 同 key 只留一条：连点保存按钮时刷新文案与计时，不堆一列一样的条 */
+    if (key) {
+      for (var i = 0; i < toastList.length; i++) {
+        if (toastList[i].key === key && !toastList[i].closing) {
+          var hit = toastList[i];
+          toastSkin(hit, type);
+          hit.msgEl.textContent = String(msg);
+          hit.duration = duration;
+          if (hit.timer) { clearTimeout(hit.timer); hit.timer = null; }
+          if (duration > 0) toastTiming(hit, duration);
+          else hit.remain = 0;
+          return hit;
+        }
+      }
+    }
+
+    var icon = TOAST_ICON[type];
+    var item = {
+      id: 'vzToast' + (++toastSeq),
+      key: key,
+      type: type,
+      duration: duration,
+      remain: duration,
+      timer: null,
+      startedAt: 0,
+      closing: false
+    };
+
+    var el = document.createElement('div');
+    el.className = 'vz-toast vz-toast-' + type;
+    el.setAttribute('role', type === 'danger' ? 'alert' : 'status');
+
+    var icoEl = document.createElement('span');
+    icoEl.className = 'vz-toast-ico';
+    icoEl.innerHTML = '<svg viewBox="' + icon.box + '" aria-hidden="true">' + icon.path + '</svg>';
+
+    var msgEl = document.createElement('span');
+    msgEl.className = 'vz-toast-msg';
+    msgEl.textContent = String(msg);
+
+    el.appendChild(icoEl);
+    el.appendChild(msgEl);
+
+    /* duration 为 0 表示常驻，必须给关闭入口，否则用户只能刷新页面 */
+    if (o.closable || duration === 0) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'vz-toast-close';
+      btn.setAttribute('aria-label', '关闭提示');
+      btn.innerHTML = '<svg viewBox="' + TOAST_ICON.danger.box + '" aria-hidden="true">' + TOAST_CLOSE_PATH + '</svg>';
+      btn.addEventListener('click', function () { toastClose(item); });
+      el.appendChild(btn);
+    }
+
+    item.el = el;
+    item.msgEl = msgEl;
+    item.icoEl = icoEl;
+    item.close = function () { toastClose(item); };
+
+    el.addEventListener('mouseenter', function () { toastHold(item); });
+    el.addEventListener('mouseleave', function () { toastResume(item); });
+    el.addEventListener('focusin', function () { toastHold(item); });
+    el.addEventListener('focusout', function () { toastResume(item); });
+
+    toastLayerEl().appendChild(el);
+    toastList.push(item);
+    requestAnimationFrame(function () { if (!item.closing) el.classList.add('show'); });
+
+    /* 超出上限就关掉最旧的几条。
+       关闭是异步的：条目要等退场动画播完才从 toastList 里摘掉，
+       所以不能拿 toastList.length 做循环条件，否则 close 完长度不变，while 直接转死。 */
+    var alive = toastList.filter(function (t) { return !t.closing; });
+    while (alive.length > TOAST_MAX) toastClose(alive.shift());
+
+    if (duration > 0) toastTiming(item, duration);
+    else item.remain = 0;
+
+    return item;
+  }
+
+  function toastTyped(type) {
+    return function (msg, opts) {
+      var o = {};
+      if (opts) for (var k in opts) if (Object.prototype.hasOwnProperty.call(opts, k)) o[k] = opts[k];
+      o.type = type;
+      return toastShow(msg, o);
+    };
+  }
+
+  function VZToast(msg, opts) { return toastShow(msg, opts); }
+  VZToast.show = toastShow;
+  VZToast.info = toastTyped('info');
+  VZToast.success = toastTyped('success');
+  VZToast.warning = toastTyped('warning');
+  VZToast.danger = toastTyped('danger');
+  VZToast.close = function (handle) { if (handle) toastClose(handle); };
+  VZToast.closeAll = function () { toastList.slice().forEach(toastClose); };
+
   /* 页眉页脚外壳
      导航与页脚链接由站点传入，core 不写死任何站点的板块清单。
      登录按钮只出位置，登录态与菜单交给站点自己接（那是 site 层的事）。 */
@@ -295,6 +496,7 @@
     modalClose: modalClose,
     VZAlert: VZAlert,
     VZConfirm: VZConfirm,
+    VZToast: VZToast,
     setup: setup,
     renderShell: renderShell,
     MODAL_MS: MODAL_MS

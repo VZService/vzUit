@@ -51,7 +51,7 @@
 
 `src/vzuit.css` 里的层级已全部收进这四个变量，`tools/check-tokens.mjs` 会把字面量 `z-index` 报出来，新增组件照此处理。
 
-过渡时长三档：`--vz-dur-fast`（悬停变色）、`--vz-dur`（常规过渡）、`--vz-dur-slow`（弹窗显隐）。弹窗的 `--vz-dur-slow` 必须与 `vzuit.js` 里的 `VZ_MODAL_MS` 保持一致，改一个必须同时改另一个。
+过渡时长三档：`--vz-dur-fast`（悬停变色）、`--vz-dur`（常规过渡，轻提示显隐）、`--vz-dur-slow`（弹窗显隐）。两组时长都与 JS 里的兜底定时器成对存在：弹窗的 `--vz-dur-slow` 对 `VZ_MODAL_MS`，轻提示的 `--vz-dur` 对 `TOAST_LEAVE_MS`。改一边必须同时改另一边，否则退场动画没播完节点就被摘掉，或者动画播完了还挂在 DOM 上。
 
 ## 高频硬编码替换表
 

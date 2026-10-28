@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="src/tokens.css">
 <link rel="stylesheet" href="src/components/seg.css">
 <link rel="stylesheet" href="src/components/switch.css">
+<link rel="stylesheet" href="src/components/toast.css">
 <style>
   /* vzUit 设计 Token，基于 VZService/vzUit v1.0.0（深色主题）
      全部用 CSS 变量集中管理，改这里全页联动 */
@@ -533,7 +534,7 @@
       <div class="block-head">
         <span class="idx">06</span>
         <h2>组件状态 Components</h2>
-        <span class="desc">Button · Input · Tag · Seg · Switch</span>
+        <span class="desc">Button · Input · Tag · Seg · Switch · Toast</span>
       </div>
 
       <div class="state-group">
@@ -590,6 +591,17 @@
           <div class="state-cell"><button class="vz-switch" role="switch" aria-checked="false"><span class="vz-switch-ico"><svg class="vz-switch-svg" viewBox="2 2 6 6"><use href="#ic-adj"></use></svg></span><span class="vz-switch-track"><i></i></span></button><div class="sc-lab">关（带图标）</div></div>
           <div class="state-cell"><button class="vz-switch on" role="switch" aria-checked="true"><span class="vz-switch-track"><i></i></span></button><div class="sc-lab">开（不带图标）</div></div>
           <div class="state-cell"><button class="vz-switch" role="switch" aria-checked="false"><span class="vz-switch-track"><i></i></span></button><div class="sc-lab">关（不带图标）</div></div>
+        </div>
+      </div>
+      <div class="state-group">
+        <div class="sg-title">轻提示 Toast（操作结果用它，别自造浮层）</div>
+        <div class="state-row">
+          <button class="btn btn-secondary" data-vz-toast="info">信息</button>
+          <button class="btn btn-secondary" data-vz-toast="success">成功</button>
+          <button class="btn btn-secondary" data-vz-toast="warning">警告</button>
+          <button class="btn btn-secondary" data-vz-toast="danger">失败</button>
+          <button class="btn btn-secondary" data-vz-toast="sticky">常驻</button>
+          <button class="btn btn-secondary" data-vz-toast="keyed">连点只留一条</button>
         </div>
       </div>
     </section>
@@ -665,5 +677,27 @@
 
     <footer>vzUit · 美术设计规范，所有 Token 以 CSS 变量集中管理，可整体替换实现换肤。</footer>
   </main>
+  <script src="src/vzuit-core.js"></script>
+  <script>
+  (function () {
+    var C = window.VZCore;
+    var text = {
+      info: '正在拉取最新内容，稍等一下',
+      success: '保存成功，改动已经生效',
+      warning: '当前网络较慢，部分图片可能加载不出来',
+      danger: '上传失败：文件超过 5MB 上限',
+      sticky: '这条不会自动消失，点右侧的叉关掉',
+      keyed: '已加入队列'
+    };
+    document.querySelectorAll('[data-vz-toast]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var kind = btn.getAttribute('data-vz-toast');
+        if (kind === 'sticky') { C.VZToast(text.sticky, { type: 'info', duration: 0 }); return; }
+        if (kind === 'keyed') { C.VZToast(text.keyed + '：' + new Date().toLocaleTimeString('zh-CN'), { type: 'info', key: 'queue' }); return; }
+        C.VZToast(text[kind], { type: kind });
+      });
+    });
+  })();
+  </script>
 </body>
 </html>

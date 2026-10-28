@@ -1,0 +1,122 @@
+/* 轻提示：一次操作的结果反馈，不打断当前操作。
+   分工口径：要用户点头、填东西、做选择，用弹窗（VZAlert / VZConfirm）；
+   只是告知「成了 / 失败了 / 正在处理」，用轻提示。各站不要再自造浮层，也不要用 alert()。
+   结构：<div class="vz-toast-layer" aria-live="polite">
+           <div class="vz-toast vz-toast-success">
+             <span class="vz-toast-ico">图标</span>
+             <span class="vz-toast-msg">文案</span>
+             <button class="vz-toast-close" aria-label="关闭提示">图标</button>
+           </div>
+         </div>
+   不引 JS 也能用：给 .vz-toast 手动加 .show 就出现，退出加 .leaving 播完再摘节点。
+   显隐同样不能用 display，靠 opacity 配 transform，与弹窗同一套做法。 */
+
+.vz-toast-layer {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--vz-space-6) + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: var(--vz-z-toast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--vz-space-2);
+  width: min(420px, calc(100vw - var(--vz-space-6) * 2));
+  /* 层本身不吃点击，否则底部这块区域整片失效；只有提示条自己接收事件 */
+  pointer-events: none;
+}
+
+.vz-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--vz-space-3);
+  /* 宽度按内容走，短提示不会拉成一条 420 的空条；长文案到层宽为止 */
+  max-width: 100%;
+  padding: var(--vz-space-3) var(--vz-space-4);
+  background: var(--vz-bg-elevated);
+  border: 1px solid var(--vz-border-2);
+  border-radius: var(--vz-radius-toast);
+  box-shadow: var(--vz-shadow-toast);
+  font-family: var(--vz-font-ui);
+  font-size: var(--vz-fs-14);
+  line-height: 1.5;
+  color: var(--vz-text);
+  opacity: 0;
+  transform: translateY(var(--vz-space-3)) scale(.96);
+  transition: opacity var(--vz-dur) ease, transform var(--vz-dur) cubic-bezier(.34,1.56,.64,1);
+  pointer-events: auto;
+}
+.vz-toast.show { opacity: 1; transform: translateY(0) scale(1); }
+/* 退场用更短的缓出，先落下去再摘节点，视觉上比原地消失轻 */
+.vz-toast.leaving {
+  opacity: 0;
+  transform: translateY(var(--vz-space-2)) scale(.96);
+  transition-timing-function: ease-in;
+}
+
+.vz-toast-ico {
+  flex: none;
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+}
+.vz-toast-ico svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+.vz-toast-msg {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.vz-toast-close {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: var(--vz-radius-sm);
+  color: var(--vz-text-tertiary);
+  cursor: pointer;
+  transition: color var(--vz-dur-fast), background var(--vz-dur-fast);
+}
+.vz-toast-close:hover {
+  color: var(--vz-text);
+  background: var(--vz-glass-8);
+}
+.vz-toast-close svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
+.vz-toast-close:focus-visible {
+  outline: 2px solid var(--vz-border-focus);
+  outline-offset: 1px;
+}
+
+/* 类型色只染图标，正文保持主文字色：四条并排也能一眼分出轻重，又不至于整条发绿发红 */
+.vz-toast-info .vz-toast-ico { color: var(--vz-info); }
+.vz-toast-success .vz-toast-ico { color: var(--vz-success); }
+.vz-toast-warning .vz-toast-ico { color: var(--vz-warning); }
+.vz-toast-danger .vz-toast-ico { color: var(--vz-danger); }
+
+@media (max-width: 640px) {
+  .vz-toast-layer {
+    bottom: calc(var(--vz-space-4) + env(safe-area-inset-bottom, 0px));
+    width: calc(100vw - var(--vz-space-4) * 2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vz-toast,
+  .vz-toast.leaving {
+    transform: none;
+    transition-duration: 0.01ms;
+  }
+}

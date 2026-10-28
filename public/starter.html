@@ -15,8 +15,8 @@
   .lead { color: var(--vz-text-secondary); font-size: var(--vz-fs-14); line-height: 1.8; margin-bottom: 1.6rem; }
   .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
   .card { background: var(--vz-surface); border: 1px solid var(--vz-border-1); border-radius: var(--vz-radius-lg); padding: 1.2rem 1.3rem; }
-  .card h2 { font-size: var(--vz-fs-15); color: var(--vz-text); margin-bottom: .7rem; font-weight: var(--vz-fw-semibold); }
-  .card p { font-size: var(--vz-fs-13); color: var(--vz-text-tertiary); line-height: 1.7; margin-bottom: .9rem; }
+  .card h2 { font-size: var(--vz-fs-16); color: var(--vz-text); margin-bottom: .7rem; font-weight: var(--vz-fw-semibold); }
+  .card p { font-size: var(--vz-fs-14); color: var(--vz-text-tertiary); line-height: 1.7; margin-bottom: .9rem; }
   .row { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; }
   .stack { display: flex; flex-direction: column; gap: .8rem; }
   .vz-input { width: 100%; padding: .62rem .9rem; background: var(--vz-glass-3); border: 1px solid var(--vz-border-2); border-radius: var(--vz-radius-input); color: var(--vz-text); font-family: var(--vz-font-ui); font-size: var(--vz-fs-14); }
@@ -63,7 +63,7 @@
             </span>
             <span class="vz-switch-track"><i></i></span>
           </button>
-          <span style="font-size: var(--vz-fs-13); color: var(--vz-text-secondary);" id="swLabel">声音已开</span>
+          <span style="font-size: var(--vz-fs-14); color: var(--vz-text-secondary);" id="swLabel">声音已开</span>
         </div>
         <div class="vz-seg" id="segTheme">
           <button class="on">暗色</button>
@@ -86,9 +86,20 @@
     </div>
 
     <div class="card">
+      <h2>轻提示 Toast</h2>
+      <p>只告知结果、不需要用户点头的反馈用它。别用 <code>alert()</code>，也别各站自造浮层。</p>
+      <div class="row">
+        <button class="vz-modal-btn primary" id="btnToastOk">保存成功</button>
+        <button class="vz-modal-btn" id="btnToastFail">保存失败</button>
+        <button class="vz-modal-btn" id="btnToastKey">连点只留一条</button>
+      </div>
+      <div class="tagline"><code>VZToast.success('保存成功')</code>，3 秒自动消失，鼠标停住时不计时。</div>
+    </div>
+
+    <div class="card">
       <h2>文本与时间</h2>
       <p>渲染用户内容一律先过 <code>VZCore.escapeHtml</code>，Markdown 走 <code>simpleMd</code>，时间用 <code>formatDate</code> 统一到东八区。</p>
-      <div class="stack" style="font-size: var(--vz-fs-13); color: var(--vz-text-secondary);">
+      <div class="stack" style="font-size: var(--vz-fs-14); color: var(--vz-text-secondary);">
         <div id="mdOut"></div>
         <div>格式化时间：<span class="mono" id="timeOut"></span></div>
       </div>
@@ -147,6 +158,19 @@
   document.getElementById('btnLoading').onclick = function () {
     C.showLoading();
     setTimeout(C.hideLoading, 2000);
+  };
+
+  /* 轻提示：同一个 key 的提示只刷新那一条，连点不会堆一列 */
+  document.getElementById('btnToastOk').onclick = function () {
+    C.VZToast.success('保存成功，改动已经生效');
+  };
+  document.getElementById('btnToastFail').onclick = function () {
+    C.VZToast.danger('保存失败：网络超时，请稍后重试');
+  };
+  var toastTries = 0;
+  document.getElementById('btnToastKey').onclick = function () {
+    toastTries += 1;
+    C.VZToast.info('正在上传，第 ' + toastTries + ' 次点击只刷新这一条', { key: 'upload' });
   };
 
   /* 文本与时间 */

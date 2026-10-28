@@ -10,8 +10,8 @@ VZService 全站共用的样式、图标与代码规范。一份源文件，多�
 |---|---|
 | `src/tokens.css` | 设计变量与字体，纯 token，无组件 |
 | `src/vzuit.css` | 完整组件样式，用 `@import` 引 tokens.css 与 components/ |
-| `src/components/` | 可单独引用的组件，文件名即组件名，全部 `vz-` 前缀 |
-| `src/vzuit-core.js` | UI 运行时 core 段，弹窗、加载圈、转义、轻量 Markdown、页眉页脚外壳，只依赖 DOM |
+| `src/components/` | 可单独引用的组件，文件名即组件名，全部 `vz-` 前缀（seg / switch / toast） |
+| `src/vzuit-core.js` | UI 运行时 core 段，弹窗、轻提示、加载圈、转义、轻量 Markdown、页眉页脚外壳，只依赖 DOM |
 | `public/starter.html` | 接入样板，新站照这份抄引用顺序与控件结构 |
 | `specs/` | 五份规范，见下方索引 |
 | `configs/` | editorconfig 与 biome 配置，各站直接拷 |
@@ -35,7 +35,7 @@ VZService 全站共用的样式、图标与代码规范。一份源文件，多�
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/VZService/vzUit@main/src/vzuit.css">
 ```
 
-需要 UI 运行时（弹窗、加载圈、转义、页眉页脚外壳）：
+需要 UI 运行时（弹窗、轻提示、加载圈、转义、页眉页脚外壳）：
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/VZService/vzUit@main/src/vzuit-core.js"></script>
@@ -43,8 +43,12 @@ VZService 全站共用的样式、图标与代码规范。一份源文件，多�
   VZCore.setup({ nav: [{ href: '/', label: '主页', id: 'home' }], footer: [] });
   VZCore.renderShell();
   VZCore.VZConfirm('确定吗？').then(function (ok) { /* ok 为 true 或 false */ });
+  VZCore.VZToast.success('保存成功');                 // 3 秒自动消失
+  VZCore.VZToast.danger('上传失败', { duration: 0 });  // 常驻，带关闭按钮
 </script>
 ```
+
+轻提示的样式在 `src/components/toast.css`，`vzuit.css` 已经引了它。`.vz-toast` 只在 toast.css 里定义，站点不再各写一份浮层样式。
 
 需要图标（功能图标与题材图标分两份，按需引其一）：
 
