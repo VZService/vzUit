@@ -43,8 +43,9 @@ VZService 全站共用的样式、图标与代码规范。一份源文件，多�
   VZCore.setup({ nav: [{ href: '/', label: '主页', id: 'home' }], footer: [] });
   VZCore.renderShell();
   VZCore.VZConfirm('确定吗？').then(function (ok) { /* ok 为 true 或 false */ });
-  VZCore.VZToast.success('保存成功');                 // 3 秒自动消失
+  VZCore.VZToast.success('保存成功');                 // 默认页面上方，3 秒自动消失
   VZCore.VZToast.danger('上传失败', { duration: 0 });  // 常驻，带关闭按钮
+  VZCore.VZToast.info('已复制', { position: 'bottom' }); // 换成页面下方
 </script>
 ```
 

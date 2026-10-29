@@ -199,19 +199,26 @@
 
   /* 轻提示
      只做「告诉用户结果」，不做阻断。需要用户确认的走 VZAlert / VZConfirm。
-     同一批操作连点时会堆一列，所以给了两件事：最多并存三条，超过关掉最旧的；
+     位置默认在页面上方，opts.position 传 bottom 挂到下方那层，两处互不影响。
+     同一批操作连点时会堆一列，所以给了两件事：每层最多并存三条，超过关掉最旧的；
      传同一个 key 的提示只刷新那一条，不新增。
      鼠标悬停或键盘把焦点移进提示条时暂停计时，离开后接着走完剩余时长，
      否则长文案还没读完就消失了。 */
 
-  var toastLayer = null;
+  var toastLayers = { top: null, bottom: null };
   var toastSeq = 0;
   var toastList = [];
   var TOAST_MAX = 3;
   var TOAST_MS = 3000;
   var TOAST_LEAVE_MS = 250;   /* 与 toast.css 里 .vz-toast 的 --vz-dur 过渡时长一致 */
 
-  /* 图标取自 src/../icons/8-ui，path 与 viewBox 原样搬，保证与其他地方同一套造型 */
+  /* 图标取自 src/../icons/8-ui，path 与 viewBox 原样搬，保证与其他地方同一套造型。
+     失败态用叉号，关闭按钮也是它，两者共用一份几何。 */
+  var TOAST_CROSS = {
+    box: '2.44 2.44 5.10 5.10',
+    path: '<path d="M6.344 2.667a.7.7 0 0 1 .99.99l-.538.537c-.359.359-.538.538-.556.759a1 1 0 0 0 0 .094c.018.22.197.4.556.76l.538.537a.701.701 0 0 1-.99.989l-.538-.538c-.36-.359-.539-.538-.76-.555a1 1 0 0 0-.093 0c-.221.017-.4.196-.76.555l-.537.538a.7.7 0 0 1-.99-.99l.538-.537c.36-.359.539-.538.556-.759a1 1 0 0 0 0-.094c-.017-.22-.197-.4-.556-.76l-.537-.537a.7.7 0 1 1 .989-.989l.538.538c.359.359.538.538.759.555a1 1 0 0 0 .094 0c.22-.017.4-.196.759-.555z"/>'
+  };
+
   var TOAST_ICON = {
     info: {
       box: '1.82 1.85 6.35 6.35',
@@ -225,23 +232,21 @@
       box: '1.75 1.75 6.50 6.50',
       path: '<path d="M4.2 7.45a.8.8 0 1 1 1.6 0 .8.8 0 0 1-1.6 0M4 2.65c0-.442.358-.9 1-.9s1 .458 1 .9-.2 2.058-.3 2.5-.258.8-.7.8-.6-.358-.7-.8S4 3.092 4 2.65"/>'
     },
-    danger: {
-      box: '1.75 1.75 6.50 6.50',
-      path: '<path d="M3.4 6.65a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6m3.2 0a.8.8 0 1 1 0 1.601.8.8 0 0 1 0-1.6m-3.2-4.9c.642 0 1 .459 1 .9 0 .443-.2 2.059-.3 2.5-.1.442-.258.8-.7.8s-.6-.358-.7-.8c-.1-.441-.3-2.057-.3-2.5 0-.441.359-.9 1-.9m3.2 0c.641 0 1 .459 1 .9 0 .443-.2 2.059-.3 2.5-.1.442-.259.8-.7.8-.442 0-.6-.358-.7-.8-.1-.441-.3-2.057-.3-2.5 0-.441.358-.9 1-.9"/>'
-    }
+    danger: TOAST_CROSS
   };
   var TOAST_ICON_KEYS = ['info', 'success', 'warning', 'danger'];
-  var TOAST_CLOSE_PATH = '<path d="M6.344 2.667a.7.7 0 0 1 .99.99l-.538.537c-.359.359-.538.538-.556.759a1 1 0 0 0 0 .094c.018.22.197.4.556.76l.538.537a.701.701 0 0 1-.99.989l-.538-.538c-.36-.359-.539-.538-.76-.555a1 1 0 0 0-.093 0c-.221.017-.4.196-.76.555l-.537.538a.7.7 0 0 1-.99-.99l.538-.537c.36-.359.539-.538.556-.759a1 1 0 0 0 0-.094c-.017-.22-.197-.4-.556-.76l-.537-.537a.7.7 0 1 1 .989-.989l.538.538c.359.359.538.538.759.555a1 1 0 0 0 .094 0c.22-.017.4-.196.759-.555z"/>';
 
-  function toastLayerEl() {
-    if (!toastLayer) {
-      toastLayer = document.createElement('div');
-      toastLayer.className = 'vz-toast-layer';
+  function toastLayerEl(pos) {
+    var key = pos === 'bottom' ? 'bottom' : 'top';
+    if (!toastLayers[key]) {
+      var el = document.createElement('div');
+      el.className = 'vz-toast-layer' + (key === 'bottom' ? ' vz-toast-layer-bottom' : '');
       /* 播报交给容器，单条不再挂 aria-live，避免两条同时出现抢读 */
-      toastLayer.setAttribute('aria-live', 'polite');
-      document.body.appendChild(toastLayer);
+      el.setAttribute('aria-live', 'polite');
+      document.body.appendChild(el);
+      toastLayers[key] = el;
     }
-    return toastLayer;
+    return toastLayers[key];
   }
 
   function toastTiming(item, ms) {
@@ -298,6 +303,7 @@
     var type = TOAST_ICON[o.type] ? o.type : 'info';
     var duration = typeof o.duration === 'number' ? o.duration : TOAST_MS;
     var key = o.key ? String(o.key) : '';
+    var pos = o.position === 'bottom' ? 'bottom' : 'top';
 
     /* 同 key 只留一条：连点保存按钮时刷新文案与计时，不堆一列一样的条 */
     if (key) {
@@ -320,6 +326,7 @@
       id: 'vzToast' + (++toastSeq),
       key: key,
       type: type,
+      pos: pos,
       duration: duration,
       remain: duration,
       timer: null,
@@ -348,7 +355,7 @@
       btn.type = 'button';
       btn.className = 'vz-toast-close';
       btn.setAttribute('aria-label', '关闭提示');
-      btn.innerHTML = '<svg viewBox="' + TOAST_ICON.danger.box + '" aria-hidden="true">' + TOAST_CLOSE_PATH + '</svg>';
+      btn.innerHTML = '<svg viewBox="' + TOAST_CROSS.box + '" aria-hidden="true">' + TOAST_CROSS.path + '</svg>';
       btn.addEventListener('click', function () { toastClose(item); });
       el.appendChild(btn);
     }
@@ -363,14 +370,14 @@
     el.addEventListener('focusin', function () { toastHold(item); });
     el.addEventListener('focusout', function () { toastResume(item); });
 
-    toastLayerEl().appendChild(el);
+    toastLayerEl(pos).appendChild(el);
     toastList.push(item);
     requestAnimationFrame(function () { if (!item.closing) el.classList.add('show'); });
 
-    /* 超出上限就关掉最旧的几条。
+    /* 超出上限就关掉同一层最旧的几条。
        关闭是异步的：条目要等退场动画播完才从 toastList 里摘掉，
-       所以不能拿 toastList.length 做循环条件，否则 close 完长度不变，while 直接转死。 */
-    var alive = toastList.filter(function (t) { return !t.closing; });
+       所以不能拿列表长度做循环条件，否则 close 完长度不变，while 直接转死。 */
+    var alive = toastList.filter(function (t) { return !t.closing && t.pos === pos; });
     while (alive.length > TOAST_MAX) toastClose(alive.shift());
 
     if (duration > 0) toastTiming(item, duration);

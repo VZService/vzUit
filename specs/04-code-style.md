@@ -43,7 +43,7 @@
 
 2026-10-23 现状：core 段已抽成 `src/vzuit-core.js`，IIFE 挂到 `window.VZCore`，导出 `escapeHtml` `inlineMd` `hasMarkdownSyntax` `simpleMd` `formatDate` `showLoading` `hideLoading` `modalOpen` `modalClose` `VZAlert` `VZConfirm` `VZToast`，外壳另有 `setup` 与 `renderShell`。函数体逐字取自 CF_vzs 的 `public/vzuit.js`，行为与源头站一致；`VZToast` 是 2026-10-24 新补的，源头站还没有对应实现。
 
-轻提示的 API 形态：`VZToast(msg, opts)` 与 `VZToast.success / info / warning / danger` 等价，`opts` 支持 `type` `duration` `key` `closable`。`duration: 0` 是常驻，自动带关闭按钮；`key` 相同的提示只刷新那一条。返回的句柄带 `close()`，另有 `VZToast.closeAll()`。文案走 `textContent`，按纯文本处理，不解析 HTML，站点不需要自己转义。
+轻提示的 API 形态：`VZToast(msg, opts)` 与 `VZToast.success / info / warning / danger` 等价，`opts` 支持 `type` `position` `duration` `key` `closable`。`position` 只认 `top`（默认）与 `bottom`，两处各用一个独立的层，同屏可以同时存在，上限按层各算三条。`duration: 0` 是常驻，自动带关闭按钮；`key` 相同的提示只刷新那一条。返回的句柄带 `close()`，另有 `VZToast.closeAll()`。文案走 `textContent`，按纯文本处理，不解析 HTML，站点不需要自己转义。
 
 外壳的边界：导航与页脚链接由站点用 `setup({ nav, footer, brand })` 传入，core 不写死任何站的板块清单；页眉右侧只留一个空的 `#userMenu` 位置，登录态、移动端抽屉、用户菜单交给站点自己接，那些依赖本站接口，属 site 层。重复调用 `renderShell()` 不会重建 DOM。
 

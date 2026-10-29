@@ -153,6 +153,8 @@
   /* 组件可变点：站点皮肤只改这几个，不用覆写组件类 */
   --vz-seg-on-bg: var(--vz-glass-12);
   --vz-seg-on-color: var(--vz-text);
+  /* 轻提示离页面上下边的距离。站点有吸顶页眉时调大它，默认值会被页眉压住 */
+  --vz-toast-offset: var(--vz-space-6);
 
   /* 焦点环与行高 */
   --vz-focus-ring: 0 0 0 2px #080b14, 0 0 0 4px #c4b5fd;

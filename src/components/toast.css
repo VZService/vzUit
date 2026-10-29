@@ -1,6 +1,8 @@
 /* 轻提示：一次操作的结果反馈，不打断当前操作。
    分工口径：要用户点头、填东西、做选择，用弹窗（VZAlert / VZConfirm）；
    只是告知「成了 / 失败了 / 正在处理」，用轻提示。各站不要再自造浮层，也不要用 alert()。
+   位置：默认页面上方居中，加 `.vz-toast-layer-bottom` 改下方居中。两处可同时存在，
+   互不挤占，由 VZToast 的 position 参数决定挂哪一层。
    结构：<div class="vz-toast-layer" aria-live="polite">
            <div class="vz-toast vz-toast-success">
              <span class="vz-toast-ico">图标</span>
@@ -14,7 +16,7 @@
 .vz-toast-layer {
   position: fixed;
   left: 50%;
-  bottom: calc(var(--vz-space-6) + env(safe-area-inset-bottom, 0px));
+  top: calc(var(--vz-toast-offset) + env(safe-area-inset-top, 0px));
   transform: translateX(-50%);
   z-index: var(--vz-z-toast);
   display: flex;
@@ -22,8 +24,12 @@
   align-items: center;
   gap: var(--vz-space-2);
   width: min(420px, calc(100vw - var(--vz-space-6) * 2));
-  /* 层本身不吃点击，否则底部这块区域整片失效；只有提示条自己接收事件 */
+  /* 层本身不吃点击，否则这块区域整片失效；只有提示条自己接收事件 */
   pointer-events: none;
+}
+.vz-toast-layer-bottom {
+  top: auto;
+  bottom: calc(var(--vz-toast-offset) + env(safe-area-inset-bottom, 0px));
 }
 
 .vz-toast {
@@ -42,17 +48,23 @@
   line-height: 1.5;
   color: var(--vz-text);
   opacity: 0;
-  transform: translateY(var(--vz-space-3)) scale(.96);
+  /* 上方层从上面落下来 */
+  transform: translateY(calc(var(--vz-space-3) * -1)) scale(.96);
   transition: opacity var(--vz-dur) ease, transform var(--vz-dur) cubic-bezier(.34,1.56,.64,1);
   pointer-events: auto;
 }
 .vz-toast.show { opacity: 1; transform: translateY(0) scale(1); }
-/* 退场用更短的缓出，先落下去再摘节点，视觉上比原地消失轻 */
-.vz-toast.leaving {
+/* 下方层反过来，从下面升上来 */
+.vz-toast-layer-bottom .vz-toast { transform: translateY(var(--vz-space-3)) scale(.96); }
+.vz-toast-layer-bottom .vz-toast.show { transform: translateY(0) scale(1); }
+/* 退场朝来的方向缩回去，视觉上比原地消失轻 */
+.vz-toast.leaving,
+.vz-toast-layer-bottom .vz-toast.leaving {
   opacity: 0;
-  transform: translateY(var(--vz-space-2)) scale(.96);
+  transform: translateY(calc(var(--vz-space-3) * -1)) scale(.96);
   transition-timing-function: ease-in;
 }
+.vz-toast-layer-bottom .vz-toast.leaving { transform: translateY(var(--vz-space-3)) scale(.96); }
 
 .vz-toast-ico {
   flex: none;
@@ -106,9 +118,9 @@
 .vz-toast-warning .vz-toast-ico { color: var(--vz-warning); }
 .vz-toast-danger .vz-toast-ico { color: var(--vz-danger); }
 
+/* 移动端只收窄，边距交给 --vz-toast-offset 统一控制，避免两个断点各自写一套 */
 @media (max-width: 640px) {
   .vz-toast-layer {
-    bottom: calc(var(--vz-space-4) + env(safe-area-inset-bottom, 0px));
     width: calc(100vw - var(--vz-space-4) * 2);
   }
 }

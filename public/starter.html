@@ -92,8 +92,9 @@
         <button class="vz-modal-btn primary" id="btnToastOk">保存成功</button>
         <button class="vz-modal-btn" id="btnToastFail">保存失败</button>
         <button class="vz-modal-btn" id="btnToastKey">连点只留一条</button>
+        <button class="vz-modal-btn" id="btnToastBottom">放到底部</button>
       </div>
-      <div class="tagline"><code>VZToast.success('保存成功')</code>，3 秒自动消失，鼠标停住时不计时。</div>
+      <div class="tagline"><code>VZToast.success('保存成功')</code>，默认页面上方，3 秒自动消失，鼠标停住时不计时。</div>
     </div>
 
     <div class="card">
@@ -171,6 +172,9 @@
   document.getElementById('btnToastKey').onclick = function () {
     toastTries += 1;
     C.VZToast.info('正在上传，第 ' + toastTries + ' 次点击只刷新这一条', { key: 'upload' });
+  };
+  document.getElementById('btnToastBottom').onclick = function () {
+    C.VZToast.success('这条挂在页面下方', { position: 'bottom' });
   };
 
   /* 文本与时间 */
