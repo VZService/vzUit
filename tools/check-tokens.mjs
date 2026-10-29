@@ -11,7 +11,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 
-const SCAN_EXT = new Set(['.css', '.html']);
+const SCAN_EXT = new Set(['.css', '.html', '.js', '.ts']);
 const SKIP_DIR = new Set(['node_modules', '.git', 'dist', '.wrangler', 'icons', '.tmp_data', 'audio-player']);
 
 function walk(dir, out) {
@@ -66,12 +66,18 @@ function main() {
       used.get(name).add(rel);
     }
 
-    text.split('\n').forEach((line, i) => {
-      if (/z-index:\s*\d/.test(line) && !/left:\s*-9999/.test(line)) {
+    const lines = text.split('\n');
+    lines.forEach((line, i) => {
+      const prev = i > 0 ? lines[i - 1] : '';
+      // 行内或上一行写 vz-allow: z-index / alpha 即豁免，用于与第三方层级对抗
+      // 或呈现属性这类 var() 不生效的位置，豁免处必须在注释里写明出处
+      const allowZ = /vz-allow:\s*z-index/.test(line) || /vz-allow:\s*z-index/.test(prev);
+      const allowAlpha = /vz-allow:\s*alpha/.test(line) || /vz-allow:\s*alpha/.test(prev);
+      if (!allowZ && /z-index:\s*\d/.test(line) && !/left:\s*-9999/.test(line)) {
         literalZ.push(`${rel}:${i + 1}  ${line.trim().slice(0, 100)}`);
       }
       const isTokenDef = /--vz-[a-z0-9-]+\s*:/.test(line);
-      if (!isTokenDef && /rgba\(\s*255\s*,\s*255\s*,\s*255\s*,\s*0?\.\d+\s*\)/.test(line)) {
+      if (!allowAlpha && !isTokenDef && /rgba\(\s*255\s*,\s*255\s*,\s*255\s*,\s*0?\.\d+\s*\)/.test(line)) {
         hardWhite.push(`${rel}:${i + 1}  ${line.trim().slice(0, 90)}`);
       }
     });
