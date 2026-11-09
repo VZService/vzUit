@@ -2,13 +2,14 @@
    只依赖 DOM，不碰任何站点接口，跨站可以直接单引。
    site 段（登录、验证码、公告、打赏、内容注入）留在各站自己的脚本里，不进本文件。
 
-   本文件分六节：
+   本文件分七节：
      HTML 转义与轻量 Markdown
      时间格式化
      加载圈
      弹窗
      轻提示
      页眉页脚外壳
+     滑块
 
    用法：
      <link rel="stylesheet" href="vzuit.css">
@@ -491,6 +492,140 @@
     }
   }
 
+  /* 滑块：拖动时数值做指数收敛，松手落到整档，档位变化给一次短震。
+     原生 input 负责取值与键盘，这里只管视觉进度、读数与手感，
+     JS 没跑起来时滑块照样能用，只是填充不跟手、读数不刷新。 */
+
+  var rangeReduce = (function () {
+    try { return w.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+  })();
+
+  function rangeDigits(input) {
+    var n = parseInt(input.getAttribute('data-vz-range-digits'), 10);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function rangeText(v, input) {
+    var d = rangeDigits(input);
+    var unit = input.getAttribute('data-vz-range-unit') || '';
+    return (d > 0 ? v.toFixed(d) : String(Math.round(v))) + unit;
+  }
+
+  function rangeBind(input) {
+    if (input.getAttribute('data-vz-range-ready')) return;
+    input.setAttribute('data-vz-range-ready', '1');
+    var wrap = input.parentNode;
+    while (wrap && wrap.nodeType === 1 && !/(^|\s)vz-range(\s|$)/.test(wrap.className)) wrap = wrap.parentNode;
+    if (!wrap || wrap.nodeType !== 1) wrap = input.parentNode;
+    var out = wrap.querySelector('.vz-range-val');
+    var snap = parseFloat(input.getAttribute('data-vz-range-snap'));
+    if (isNaN(snap) || snap <= 0) snap = 0;
+    var min = parseFloat(input.min);
+    var max = parseFloat(input.max);
+    var target = parseFloat(input.value);
+    var shown = target;
+    var rafId = null;
+    var lastTs = 0;
+    var lastTick = null;
+    var snapTimer = null;
+    var canVibrate = typeof w.navigator !== 'undefined' && typeof w.navigator.vibrate === 'function';
+
+    function paint() {
+      var ratio = (max - min) ? (shown - min) / (max - min) : 0;
+      ratio = ratio < 0 ? 0 : (ratio > 1 ? 1 : ratio);
+      wrap.style.setProperty('--vz-range-p', (ratio * 100).toFixed(2) + '%');
+      if (out) out.innerHTML = rangeText(shown, input);
+      input.setAttribute('aria-valuetext', rangeText(shown, input));
+    }
+
+    function tickStep() {
+      if (!canVibrate) return;
+      var q = snap > 0 ? Math.round(shown / snap) : Math.round(shown);
+      if (lastTick === null) { lastTick = q; return; }
+      if (q !== lastTick) {
+        lastTick = q;
+        try { w.navigator.vibrate(5); } catch (e) {}
+      }
+    }
+
+    function frame(ts) {
+      if (!lastTs) lastTs = ts;
+      var dt = Math.min(60, ts - lastTs) / 1000;
+      lastTs = ts;
+      shown += (target - shown) * (1 - Math.pow(0.0001, dt));
+      tickStep();
+      if (Math.abs(target - shown) < 0.001) {
+        shown = target;
+        paint();
+        rafId = null;
+        lastTs = 0;
+        return;
+      }
+      paint();
+      rafId = w.requestAnimationFrame(frame);
+    }
+
+    function start() {
+      if (rangeReduce) { shown = target; paint(); return; }
+      if (rafId) return;
+      lastTs = 0;
+      rafId = w.requestAnimationFrame(frame);
+    }
+
+    function scheduleSnap() {
+      if (!snap) return;
+      if (snapTimer) w.clearTimeout(snapTimer);
+      snapTimer = w.setTimeout(function () {
+        var nearest = Math.round(target / snap) * snap;
+        nearest = Math.min(max, Math.max(min, nearest));
+        if (Math.abs(target - nearest) > 0.0001 && Math.abs(target - nearest) < snap * 0.6) {
+          target = nearest;
+          input.value = String(nearest);
+          start();
+        }
+      }, 110);
+    }
+
+    input.addEventListener('input', function () {
+      target = parseFloat(input.value);
+      start();
+      scheduleSnap();
+    });
+    input.addEventListener('keydown', function (e) {
+      var keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown'];
+      if (keys.indexOf(e.key) < 0) return;
+      e.preventDefault();
+      var step = snap > 0 ? snap : parseFloat(input.step || '1');
+      if (e.key === 'PageUp' || e.key === 'PageDown') step = step * 2;
+      var dir = (e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'PageUp') ? 1 : -1;
+      target = Math.min(max, Math.max(min, target + step * dir));
+      input.value = String(target);
+      if (snapTimer) { w.clearTimeout(snapTimer); snapTimer = null; }
+      start();
+    });
+    input.addEventListener('pointerdown', function () { input.classList.add('is-dragging'); });
+    ['pointerup', 'pointercancel', 'blur'].forEach(function (ev) {
+      input.addEventListener(ev, function () {
+        input.classList.remove('is-dragging');
+        scheduleSnap();
+      });
+    });
+
+    paint();
+  }
+
+  function rangeInit(root) {
+    var scope = root || document;
+    var list = scope.querySelectorAll('.vz-range input[type="range"]');
+    for (var i = 0; i < list.length; i++) rangeBind(list[i]);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { rangeInit(); });
+  } else {
+    rangeInit();
+  }
+
   w.VZCore = {
     escapeHtml: escapeHtml,
     inlineMd: inlineMd,
@@ -506,6 +641,8 @@
     VZToast: VZToast,
     setup: setup,
     renderShell: renderShell,
+    rangeInit: rangeInit,
+    rangeBind: rangeBind,
     MODAL_MS: MODAL_MS
   };
 

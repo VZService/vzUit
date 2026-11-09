@@ -10,8 +10,8 @@ VZService 全站共用的样式、图标与代码规范。一份源文件，多�
 |---|---|
 | `src/tokens.css` | 设计变量与字体，纯 token，无组件 |
 | `src/vzuit.css` | 完整组件样式，用 `@import` 引 tokens.css 与 components/ |
-| `src/components/` | 可单独引用的组件，文件名即组件名，全部 `vz-` 前缀（seg / switch / toast） |
-| `src/vzuit-core.js` | UI 运行时 core 段，弹窗、轻提示、加载圈、转义、轻量 Markdown、页眉页脚外壳，只依赖 DOM |
+| `src/components/` | 可单独引用的组件，文件名即组件名，全部 `vz-` 前缀（seg / switch / range / toast） |
+| `src/vzuit-core.js` | UI 运行时 core 段，弹窗、轻提示、加载圈、滑块、转义、轻量 Markdown、页眉页脚外壳，只依赖 DOM |
 | `public/starter.html` | 接入样板，新站照这份抄引用顺序与控件结构 |
 | `specs/` | 五份规范，见下方索引 |
 | `configs/` | editorconfig 与 biome 配置，各站直接拷 |
@@ -50,6 +50,18 @@ VZService 全站共用的样式、图标与代码规范。一份源文件，多�
 ```
 
 轻提示的样式在 `src/components/toast.css`，`vzuit.css` 已经引了它。`.vz-toast` 只在 toast.css 里定义，站点不再各写一份浮层样式。
+
+滑块（连续量设置，速度、透明度、音量这类）：
+
+```html
+<div class="vz-range">
+  <div class="vz-range-head"><span>播放速度</span><b class="vz-range-val">1.0x</b></div>
+  <input type="range" min="0.5" max="2" step="0.1" value="1"
+         data-vz-range-snap="0.1" data-vz-range-digits="1" data-vz-range-unit="x" aria-label="播放速度">
+</div>
+```
+
+`vzuit-core.js` 会在 DOMContentLoaded 时接管页面上所有 `.vz-range input`，拖动做指数收敛、松手落到 `data-vz-range-snap` 的整档、读数写进 `.vz-range-val`。动态渲染出来的滑块在插入 DOM 后调一次 `VZCore.rangeInit(容器)`。不引运行时也能用，只是填充不跟手、读数不刷新。
 
 需要图标（功能图标与题材图标分两份，按需引其一）：
 
