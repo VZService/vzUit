@@ -494,11 +494,9 @@
 
   /* 滑块：拖动时数值做指数收敛，松手落到整档，档位变化给一次短震。
      原生 input 负责取值与键盘，这里只管视觉进度、读数与手感，
-     JS 没跑起来时滑块照样能用，只是填充不跟手、读数不刷新。 */
-
-  var rangeReduce = (function () {
-    try { return w.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
-  })();
+     JS 没跑起来时滑块照样能用，只是填充不跟手、读数不刷新。
+     跟随手指属于直接操控，系统关掉动画时也要保留，否则填充会整条跳变，
+     手感从「跟手」退化成「一卡一卡」。 */
 
   function rangeDigits(input) {
     var n = parseInt(input.getAttribute('data-vz-range-digits'), 10);
@@ -552,7 +550,7 @@
       if (!lastTs) lastTs = ts;
       var dt = Math.min(60, ts - lastTs) / 1000;
       lastTs = ts;
-      shown += (target - shown) * (1 - Math.pow(0.0001, dt));
+      shown += (target - shown) * (1 - Math.pow(1e-8, dt));
       tickStep();
       if (Math.abs(target - shown) < 0.001) {
         shown = target;
@@ -566,7 +564,6 @@
     }
 
     function start() {
-      if (rangeReduce) { shown = target; paint(); return; }
       if (rafId) return;
       lastTs = 0;
       rafId = w.requestAnimationFrame(frame);
