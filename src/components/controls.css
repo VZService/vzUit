@@ -1,0 +1,484 @@
+/* 表单控件层：所有浏览器原生外观一律覆盖，改用本站自定义绘制
+   覆盖范围 select / checkbox / radio / range / file / number / date / search / textarea / scrollbar / dialog
+   规则一句话：业务里不许出现未被覆盖的原生控件，任何新控件先在这里加类再来用。
+
+   尺寸阶梯全部走 4px 倍数：sm 28、默认 32、lg 40。
+   输入框圆角 4，按钮 6，卡片 12，浮层 16，语义在 tokens.css 的 --vz-radius-* 里已经定死。 */
+
+/* 原生控件统一去壳，浏览器默认边框、内阴影、箭头、按钮全部清掉 */
+:where(button, input, select, textarea, progress, meter, output) {
+  -webkit-appearance: none;
+  appearance: none;
+  font: inherit;
+  color: inherit;
+  margin: 0;
+  background-color: transparent;
+  background-image: none;
+  border: 0;
+  border-radius: 0;
+}
+
+:where(button, input, select, textarea, [role="button"], summary) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 搜索框的系统放大镜与清除按钮、数字框的上下箭头、日期框的日历图标都收编 */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+input::-ms-clear, input::-ms-reveal { display: none; }
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: .55;
+  transition: opacity var(--vz-dur-fast);
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+:root:not([data-theme="light"]) input[type="date"]::-webkit-calendar-picker-indicator,
+:root:not([data-theme="light"]) input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+input[type="color"] { padding: 0; border: 0; background: transparent; }
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+input[type="color"]::-webkit-color-swatch { border: 1px solid var(--vz-border); border-radius: var(--vz-radius-sm); }
+
+/* 选中文本与占位符也用品牌色，不出现浏览器默认蓝 */
+::selection { background: var(--vz-primary-subtle); color: var(--vz-text); }
+::placeholder { color: var(--vz-text-tertiary); opacity: 1; }
+:where(input, textarea, select):disabled::placeholder { color: var(--vz-text-disabled); }
+
+/* 自动填充的背景会被浏览器刷成淡黄，用内阴影压回来 */
+:where(input, textarea):-webkit-autofill,
+:where(input, textarea):-webkit-autofill:hover,
+:where(input, textarea):-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--vz-text);
+  -webkit-box-shadow: 0 0 0 1000px var(--vz-bg-surface) inset;
+  caret-color: var(--vz-text);
+  transition: background-color 9999s ease-out;
+}
+
+/* 滚动条，自有细条，不用系统粗条 */
+* { scrollbar-width: thin; scrollbar-color: var(--vz-glass-12) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--vz-glass-12); border-radius: var(--vz-radius-pill); }
+::-webkit-scrollbar-thumb:hover { background: var(--vz-border-3); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* 文本域右下角的斜纹拖拽柄 */
+textarea { resize: vertical; }
+
+/* 字段容器：标签置顶，错误文案贴字段下方，标签与控件间距 8，字段之间 16 */
+.vz-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vz-space-2);
+  margin-bottom: var(--vz-space-4);
+  width: 100%;
+}
+.vz-field > label,
+.vz-label-top {
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-type-body-line);
+  font-weight: var(--vz-fw-medium);
+  color: var(--vz-text-secondary);
+}
+.vz-field .vz-required { color: var(--vz-danger); margin-left: var(--vz-space-1); }
+.vz-field-hint {
+  font-size: var(--vz-type-caption-size);
+  line-height: var(--vz-type-caption-line);
+  color: var(--vz-text-tertiary);
+}
+.vz-field-error {
+  display: none;
+  font-size: var(--vz-type-caption-size);
+  line-height: var(--vz-type-caption-line);
+  color: var(--vz-danger);
+}
+.vz-field.is-invalid .vz-field-error { display: block; }
+.vz-field.is-invalid .vz-input,
+.vz-field.is-invalid .vz-select,
+.vz-field.is-invalid .vz-textarea { border-color: var(--vz-danger); }
+
+/* 文本类控件 */
+.vz-input,
+.vz-select,
+.vz-textarea,
+.vz-input-round {
+  display: block;
+  width: 100%;
+  min-height: var(--vz-control-h);
+  padding: 0 var(--vz-space-3);
+  background: var(--vz-bg-subtle);
+  border: 1px solid var(--vz-border-1);
+  border-radius: var(--vz-radius-sm);
+  color: var(--vz-text);
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-type-body-line);
+  transition: border-color var(--vz-dur-fast), background-color var(--vz-dur-fast), box-shadow var(--vz-dur-fast);
+}
+.vz-textarea {
+  min-height: 96px;
+  padding: var(--vz-space-2) var(--vz-space-3);
+  line-height: var(--vz-line);
+}
+.vz-input-sm, .vz-select-sm { min-height: var(--vz-control-h-sm); font-size: var(--vz-type-caption-size); }
+.vz-input-lg, .vz-select-lg { min-height: var(--vz-control-h-lg); }
+.vz-input:hover, .vz-select:hover, .vz-textarea:hover { border-color: var(--vz-border-2); }
+.vz-input:focus, .vz-select:focus, .vz-textarea:focus {
+  outline: none;
+  border-color: var(--vz-primary);
+  background: var(--vz-bg-surface);
+  box-shadow: 0 0 0 3px var(--vz-primary-subtle);
+}
+.vz-input:disabled, .vz-select:disabled, .vz-textarea:disabled {
+  background: var(--vz-bg-disabled);
+  color: var(--vz-text-disabled);
+  border-color: var(--vz-border-1);
+  cursor: not-allowed;
+}
+.vz-input[readonly], .vz-textarea[readonly] { background: var(--vz-bg-subtle); border-style: dashed; }
+.vz-input[aria-invalid="true"], .vz-select[aria-invalid="true"], .vz-textarea[aria-invalid="true"] { border-color: var(--vz-danger); }
+
+/* 输入框内嵌图标与前后缀 */
+.vz-input-group {
+  display: flex;
+  align-items: center;
+  gap: var(--vz-space-2);
+  width: 100%;
+  min-height: var(--vz-control-h);
+  padding: 0 var(--vz-space-3);
+  background: var(--vz-bg-subtle);
+  border: 1px solid var(--vz-border-1);
+  border-radius: var(--vz-radius-sm);
+  transition: border-color var(--vz-dur-fast), box-shadow var(--vz-dur-fast);
+}
+.vz-input-group:focus-within {
+  border-color: var(--vz-primary);
+  box-shadow: 0 0 0 3px var(--vz-primary-subtle);
+}
+.vz-input-group > .vz-input,
+.vz-input-group > .vz-select {
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.vz-input-group > .vz-input:focus { box-shadow: none; }
+.vz-input-affix {
+  display: inline-flex;
+  align-items: center;
+  color: var(--vz-text-tertiary);
+  font-size: var(--vz-type-caption-size);
+  white-space: nowrap;
+  flex: none;
+}
+.vz-input-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--vz-text-tertiary);
+  flex: none;
+}
+
+/* 下拉：原生箭头去掉，右侧用遮罩画一个 chevron，颜色随文字层次变 */
+.vz-select {
+  padding-right: var(--vz-space-6);
+  cursor: pointer;
+  background-image: none;
+}
+.vz-select option {
+  background: var(--vz-popover-bg);
+  color: var(--vz-text);
+  padding: var(--vz-space-2);
+}
+.vz-select-wrap { position: relative; display: block; width: 100%; }
+.vz-select-wrap::after {
+  content: "";
+  position: absolute;
+  right: var(--vz-space-3);
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translateY(-50%);
+  background: var(--vz-text-tertiary);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>") center / contain no-repeat;
+  pointer-events: none;
+  transition: transform var(--vz-dur-fast);
+}
+.vz-select-wrap.is-open::after { transform: translateY(-50%) rotate(180deg); }
+.vz-select-wrap > .vz-select { padding-right: var(--vz-space-8); }
+
+/* 复选框：方块自绘，勾用遮罩画，选中才显形 */
+.vz-check {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--vz-space-2);
+  cursor: pointer;
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-type-body-line);
+  color: var(--vz-text);
+  user-select: none;
+}
+.vz-check > input[type="checkbox"],
+.vz-check > input[type="radio"] {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  border: 1px solid var(--vz-border-3);
+  border-radius: var(--vz-radius-sm);
+  background: var(--vz-bg-subtle);
+  cursor: pointer;
+  transition: background-color var(--vz-dur-fast), border-color var(--vz-dur-fast), box-shadow var(--vz-dur-fast);
+  position: relative;
+}
+.vz-check > input[type="radio"] { border-radius: var(--vz-radius-pill); }
+.vz-check > input:hover { border-color: var(--vz-primary); }
+.vz-check > input:checked {
+  background: var(--vz-primary);
+  border-color: var(--vz-primary);
+}
+.vz-check > input[type="checkbox"]:checked {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6L9 17l-5-5'/></svg>");
+  background-size: 12px 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.vz-check > input[type="radio"]:checked {
+  background: var(--vz-primary);
+  border-color: var(--vz-primary);
+  box-shadow: inset 0 0 0 3px var(--vz-bg-surface);
+}
+.vz-check > input:indeterminate {
+  background: var(--vz-primary);
+  border-color: var(--vz-primary);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke='white' stroke-width='3.5' stroke-linecap='round'><path d='M5 12h14'/></svg>");
+  background-size: 12px 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.vz-check > input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--vz-bg), 0 0 0 4px var(--vz-primary);
+}
+.vz-check > input:disabled {
+  background: var(--vz-bg-disabled);
+  border-color: var(--vz-border-1);
+  cursor: not-allowed;
+}
+.vz-check.is-disabled { color: var(--vz-text-disabled); cursor: not-allowed; }
+.vz-check-text { display: flex; flex-direction: column; gap: 2px; }
+.vz-check-desc { font-size: var(--vz-type-caption-size); color: var(--vz-text-tertiary); }
+
+/* 一组勾选：竖排 8 间距，横排 16 间距，选项少就平铺，不塞进多选下拉 */
+.vz-check-group { display: flex; flex-direction: column; gap: var(--vz-space-2); }
+.vz-check-group.is-row { flex-direction: row; flex-wrap: wrap; gap: var(--vz-space-4); }
+.vz-check-group.is-card {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--vz-space-2);
+}
+.vz-check-group.is-card > .vz-check {
+  padding: var(--vz-space-3);
+  border: 1px solid var(--vz-border-1);
+  border-radius: var(--vz-radius-sm);
+  background: var(--vz-bg-subtle);
+  transition: border-color var(--vz-dur-fast), background-color var(--vz-dur-fast);
+}
+.vz-check-group.is-card > .vz-check:has(input:checked) {
+  border-color: var(--vz-primary);
+  background: var(--vz-primary-subtle);
+}
+
+/* 原生复选框直接落类时也能用，不强制包一层容器 */
+input[type="checkbox"].vz-checkbox,
+input[type="radio"].vz-radio {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border: 1px solid var(--vz-border-3);
+  border-radius: var(--vz-radius-sm);
+  background: var(--vz-bg-subtle);
+  cursor: pointer;
+  transition: background-color var(--vz-dur-fast), border-color var(--vz-dur-fast);
+}
+input[type="radio"].vz-radio { border-radius: var(--vz-radius-pill); }
+input[type="checkbox"].vz-checkbox:checked {
+  background: var(--vz-primary);
+  border-color: var(--vz-primary);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6L9 17l-5-5'/></svg>");
+  background-size: 12px 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+input[type="radio"].vz-radio:checked {
+  background: var(--vz-primary);
+  border-color: var(--vz-primary);
+  box-shadow: inset 0 0 0 3px var(--vz-bg-surface);
+}
+
+/* 开关：原生 checkbox 加类即可，轨道与滑块全自绘，不用图标开关时走这个 */
+.vz-toggle {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex: none;
+  border-radius: var(--vz-radius-pill);
+  background: var(--vz-border-3);
+  cursor: pointer;
+  transition: background-color var(--vz-dur-fast);
+}
+.vz-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--vz-radius-pill);
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.2);
+  transition: transform var(--vz-dur-fast);
+}
+.vz-toggle:checked { background: var(--vz-primary); }
+.vz-toggle:checked::after { transform: translateX(16px); }
+.vz-toggle:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--vz-bg), 0 0 0 4px var(--vz-primary); }
+.vz-toggle:disabled { background: var(--vz-bg-disabled); cursor: not-allowed; }
+.vz-toggle:disabled::after { background: var(--vz-text-disabled); }
+
+/* 滑块：轨道、已选段、滑柄全自绘，各浏览器一致 */
+.vz-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+  cursor: pointer;
+  --vz-range-track: var(--vz-border-2);
+  --vz-range-fill: var(--vz-primary);
+  --vz-range-thumb: #ffffff;
+  --vz-range-thumb-ring: var(--vz-primary);
+}
+.vz-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: var(--vz-radius-pill);
+  background: linear-gradient(
+    to right,
+    var(--vz-range-fill) 0%,
+    var(--vz-range-fill) var(--vz-range-p, 0%),
+    var(--vz-range-track) var(--vz-range-p, 0%),
+    var(--vz-range-track) 100%
+  );
+}
+.vz-range::-moz-range-track {
+  height: 4px;
+  border-radius: var(--vz-radius-pill);
+  background: var(--vz-range-track);
+}
+.vz-range::-moz-range-progress {
+  height: 4px;
+  border-radius: var(--vz-radius-pill);
+  background: var(--vz-range-fill);
+}
+.vz-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  border-radius: var(--vz-radius-pill);
+  background: var(--vz-range-thumb);
+  border: 2px solid var(--vz-range-thumb-ring);
+  box-shadow: 0 1px 3px rgba(15,23,42,0.2);
+  transition: transform var(--vz-dur-fast);
+}
+.vz-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--vz-radius-pill);
+  background: var(--vz-range-thumb);
+  border: 2px solid var(--vz-range-thumb-ring);
+  box-shadow: 0 1px 3px rgba(15,23,42,0.2);
+}
+.vz-range:active::-webkit-slider-thumb { transform: scale(1.1); }
+.vz-range:focus-visible { outline: none; }
+.vz-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--vz-primary-subtle); }
+.vz-range:disabled { cursor: not-allowed; opacity: .5; }
+
+/* 文件选择：系统按钮换成品牌按钮，拖拽区自己画 */
+.vz-file {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--vz-space-2);
+  padding: var(--vz-space-5) var(--vz-space-4);
+  border: 1px dashed var(--vz-border-3);
+  border-radius: var(--vz-radius-sm);
+  background: var(--vz-bg-subtle);
+  color: var(--vz-text-secondary);
+  font-size: var(--vz-type-body-size);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--vz-dur-fast), background-color var(--vz-dur-fast);
+}
+.vz-file:hover, .vz-file.is-dragover { border-color: var(--vz-primary); background: var(--vz-primary-subtle); }
+.vz-file input[type="file"] { display: none; }
+.vz-file-hint { font-size: var(--vz-type-caption-size); color: var(--vz-text-tertiary); }
+.vz-file-name { font-size: var(--vz-type-caption-size); color: var(--vz-text); font-weight: var(--vz-fw-medium); }
+
+/* 原生 file input 直接露在外面的场景（没包 .vz-file）也把系统按钮换掉 */
+input[type="file"]::file-selector-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-right: var(--vz-space-2);
+  padding: 0 var(--vz-space-3);
+  height: var(--vz-control-h-sm);
+  border: 1px solid var(--vz-border-1);
+  border-radius: var(--vz-radius-sm);
+  background: var(--vz-bg-subtle);
+  color: var(--vz-text);
+  font: inherit;
+  font-size: var(--vz-type-caption-size);
+  cursor: pointer;
+}
+input[type="file"]::file-selector-button:hover { border-color: var(--vz-primary); color: var(--vz-brand-from); }
+
+/* 进度条与计量条，webkit 与 moz 两套都覆盖 */
+progress.vz-progress {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border: 0;
+  border-radius: var(--vz-radius-pill);
+  background: var(--vz-border-2);
+  overflow: hidden;
+}
+progress.vz-progress::-webkit-progress-bar { background: var(--vz-border-2); border-radius: var(--vz-radius-pill); }
+progress.vz-progress::-webkit-progress-value { background: var(--vz-primary); border-radius: var(--vz-radius-pill); }
+progress.vz-progress::-moz-progress-bar { background: var(--vz-primary); border-radius: var(--vz-radius-pill); }
+
+/* 原生 dialog 也收编，遮罩与容器走同一套浮层观感 */
+dialog.vz-dialog {
+  border: 1px solid var(--vz-border-1);
+  border-radius: var(--vz-radius-xl);
+  background: var(--vz-bg-modal);
+  color: var(--vz-text);
+  padding: var(--vz-space-5);
+  box-shadow: var(--vz-shadow-dialog);
+  max-width: min(520px, calc(100vw - var(--vz-space-6)));
+}
+dialog.vz-dialog::backdrop { background: var(--vz-scrim); backdrop-filter: blur(4px); }

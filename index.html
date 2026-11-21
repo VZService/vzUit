@@ -5,118 +5,110 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>vzUit · 美术设计规范</title>
 <link rel="stylesheet" href="src/tokens.css">
+<link rel="stylesheet" href="src/components/button.css">
+<link rel="stylesheet" href="src/components/controls.css">
+<link rel="stylesheet" href="src/components/data.css">
+<link rel="stylesheet" href="src/components/feedback.css">
 <link rel="stylesheet" href="src/components/seg.css">
 <link rel="stylesheet" href="src/components/switch.css">
+<link rel="stylesheet" href="src/components/range.css">
 <link rel="stylesheet" href="src/components/toast.css">
 <style>
   /* vzUit 设计 Token，基于 VZService/vzUit v1.0.0（深色主题）
      全部用 CSS 变量集中管理，改这里全页联动 */
+  /* 本页只做别名，色值一律来自 src/tokens.css，页面里不再重复一份十六进制。
+     改基座 token 全站联动，规范站自己也不许开第二份色表。 */
   :root {
-    /* 品牌渐变（紫 → 靛蓝） */
-    --brand-purple: #7c3aed;
-    --brand-indigo: #4f46e5;
-    --brand-gradient: linear-gradient(135deg, #7c3aed, #4f46e5);
-    --brand-gradient-active: linear-gradient(135deg, #6d28d9, #4338ca);
-    --brand-accent: #a78bfa;            /* 聚焦 / 交互紫 */
+    --brand-purple: var(--vz-primary);
+    --brand-indigo: var(--vz-brand-9);
+    --brand-gradient: var(--vz-primary-gradient);
+    --brand-gradient-active: var(--vz-primary-gradient-active);
+    --brand-accent: var(--vz-brand-from);
 
-    /* 主色阶（紫，1–10） */
-    --brand-1:  #f3e8ff;
-    --brand-2:  #e9d5ff;
-    --brand-3:  #d8b4fe;
-    --brand-4:  #c4b5fd;
-    --brand-5:  #a78bfa;
-    --brand-6:  #7c3aed;   /* 主色 */
-    --brand-7:  #6d28d9;
-    --brand-8:  #5b21b6;
-    --brand-9:  #4f46e5;   /* 渐变终点·靛 */
-    --brand-10: #2e1065;
+    --brand-1:  var(--vz-brand-1);
+    --brand-2:  var(--vz-brand-2);
+    --brand-3:  var(--vz-brand-3);
+    --brand-4:  var(--vz-brand-4);
+    --brand-5:  var(--vz-brand-5);
+    --brand-6:  var(--vz-brand-6);
+    --brand-7:  var(--vz-brand-7);
+    --brand-8:  var(--vz-brand-8);
+    --brand-9:  var(--vz-brand-9);
+    --brand-10: var(--vz-brand-10);
 
-    /* 背景与表面（暗色） */
-    --bg-base:    #080b14;
-    --bg-drawer:  #0d0f1a;
-    --bg-modal:   #11142a;
-    --bg-surface: #141828;
-    --bg-elevated:#1a1f33;
+    --bg-base:     var(--vz-bg);
+    --bg-drawer:   var(--vz-deep);
+    --bg-modal:    var(--vz-bg-modal);
+    --bg-surface:  var(--vz-bg-surface);
+    --bg-elevated: var(--vz-bg-elevated);
 
-    /* 玻璃层（白色透明，用于卡片/控件表面） */
-    --glass-1: rgba(255,255,255,0.02);
-    --glass-2: rgba(255,255,255,0.03);
-    --glass-3: rgba(255,255,255,0.04);
-    --glass-4: rgba(255,255,255,0.05);
-    --glass-8: rgba(255,255,255,0.08);
+    --glass-1: var(--vz-surface);
+    --glass-2: var(--vz-glass-2);
+    --glass-3: var(--vz-glass-3);
+    --glass-4: var(--vz-glass-4);
+    --glass-8: var(--vz-glass-8);
 
-    /* 边框 */
-    --border-1: rgba(255,255,255,0.06);
-    --border-2: rgba(255,255,255,0.08);
-    --border-3: rgba(255,255,255,0.15);
-    --border-focus: rgba(167,139,250,0.30);
+    --border-1: var(--vz-border-1);
+    --border-2: var(--vz-border-2);
+    --border-3: var(--vz-border-3);
+    --border-focus: var(--vz-border-focus);
 
-    /* 文字 */
-    --text-1: rgba(255,255,255,0.95);
-    --text-2: rgba(255,255,255,0.60);
-    --text-3: rgba(255,255,255,0.40);
+    --text-1: var(--vz-text);
+    --text-2: var(--vz-text-secondary);
+    --text-3: var(--vz-text-tertiary);
 
-    /* 功能色 */
-    --success:      #10b981;
-    --success-2:    #059669;
-    --success-grad: linear-gradient(135deg, #10b981, #059669);
-    --info:         #38bdf8;
-    --warning:      #fb923c;
-    --error:        #f43f5e;
+    --success: var(--vz-success);
+    --success-2: var(--vz-success-2);
+    --success-grad: var(--vz-success-grad);
+    --info: var(--vz-info);
+    --warning: var(--vz-warning);
+    --error: var(--vz-danger);
 
-    /* 标签彩色（霓虹类别色） */
-    --tag-purple: #a78bfa;
-    --tag-blue:   #38bdf8;
-    --tag-green:  #34d399;
-    --tag-pink:   #f472b6;
-    --tag-orange: #fb923c;
+    --tag-purple: var(--vz-tag-purple);
+    --tag-blue:   var(--vz-tag-blue);
+    --tag-green:  var(--vz-tag-green);
+    --tag-pink:   var(--vz-tag-pink);
+    --tag-orange: var(--vz-tag-orange);
 
-    /* 字号阶梯 */
-    --fs-12: 12px;
-    --fs-14: 14px;
-    --fs-16: 16px;
-    --fs-20: 20px;
-    --fs-24: 24px;
-    --fs-30: 30px;
-    --fs-38: 38px;
-    --fs-46: 46px;
+    --fs-12: var(--vz-fs-12);
+    --fs-14: var(--vz-fs-14);
+    --fs-16: var(--vz-fs-16);
+    --fs-20: var(--vz-fs-16);
+    --fs-24: var(--vz-fs-24);
+    --fs-30: var(--vz-fs-30);
+    --fs-38: var(--vz-fs-46);
+    --fs-46: var(--vz-fs-46);
 
-    /* 字重 */
-    --fw-regular: 400;
-    --fw-medium: 500;
-    --fw-semibold: 600;
-    --fw-bold: 700;
+    --fw-regular: var(--vz-fw-regular);
+    --fw-medium: var(--vz-fw-medium);
+    --fw-semibold: var(--vz-fw-semibold);
+    --fw-bold: var(--vz-fw-bold);
 
-    /* 间距梯度（4px 基准） */
-    --sp-1: 4px;
-    --sp-2: 8px;
-    --sp-3: 12px;
-    --sp-4: 16px;
-    --sp-5: 24px;
-    --sp-6: 32px;
+    --sp-1: var(--vz-space-1);
+    --sp-2: var(--vz-space-2);
+    --sp-3: var(--vz-space-3);
+    --sp-4: var(--vz-space-4);
+    --sp-5: var(--vz-space-5);
+    --sp-6: var(--vz-space-6);
 
-    /* 圆角（按组件定义） */
-    --radius-progress: 10px;
-    --radius-input: 14px;
-    --radius-toast: 16px;
-    --radius-card: 24px;
-    --radius-modal: 32px;
-    --radius-tag: 40px;
-    --radius-btn: 60px;     /* 胶囊按钮 */
+    --radius-progress: var(--vz-radius-progress);
+    --radius-input: var(--vz-radius-input);
+    --radius-toast: var(--vz-radius-toast);
+    --radius-card: var(--vz-radius);
+    --radius-modal: var(--vz-radius-xl);
+    --radius-tag: var(--vz-radius-sm);
+    --radius-btn: var(--vz-radius-md);
 
-    /* 阴影 / 光晕 */
-    --shadow-card: 0 20px 60px rgba(0,0,0,0.30);
-    --shadow-glow: 0 20px 60px rgba(88,60,250,0.08);
-    --shadow-primary: 0 8px 24px rgba(124,58,237,0.20);
-    --shadow-primary-hover: 0 12px 32px rgba(124,58,237,0.30);
-    --shadow-success: 0 8px 24px rgba(16,185,129,0.20);
-    --shadow-success-hover: 0 12px 32px rgba(16,185,129,0.30);
-    --shadow-modal: 0 40px 80px rgba(0,0,0,0.60);
-    --shadow-toast: 0 12px 40px rgba(0,0,0,0.40);
+    --shadow-card: var(--vz-shadow-card);
+    --shadow-glow: var(--vz-shadow-glow);
+    --shadow-primary: var(--vz-shadow-primary);
+    --shadow-primary-hover: var(--vz-shadow-primary-hover);
+    --shadow-success: var(--vz-shadow-success);
+    --shadow-success-hover: var(--vz-shadow-success-hover);
+    --shadow-modal: var(--vz-shadow-dialog);
+    --shadow-toast: var(--vz-shadow-toast);
 
-    /* 字体 */
-    --font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto,
-                   "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    --font-family: var(--vz-font-ui);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -347,6 +339,11 @@
     .swatch-grid, .surf-grid, .func-grid, .tagcolor-grid { grid-template-columns: repeat(5, 1fr); }
     .nav-links { display: none; }
   }
+
+  /* 组件演示区：表单两列自适应，窄屏单列 */
+  .form-demo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--vz-space-4) var(--vz-space-5); }
+  .form-demo .vz-field { margin-bottom: 0; }
+  .state-row { flex-wrap: wrap; }
 </style>
 </head>
 <body>
@@ -613,6 +610,154 @@
           <button class="btn btn-secondary" data-vz-toast="bottom">放到底部</button>
         </div>
       </div>
+      <div class="state-group">
+        <div class="sg-title">按钮 Button（五档变体 · 六种状态，悬停与按下直接点着看）</div>
+        <div class="state-row">
+          <div class="state-cell"><button class="vz-btn vz-btn-primary">保存改动</button><div class="sc-lab">primary 默认</div></div>
+          <div class="state-cell"><button class="vz-btn vz-btn-secondary">取消</button><div class="sc-lab">secondary</div></div>
+          <div class="state-cell"><button class="vz-btn vz-btn-ghost">编辑</button><div class="sc-lab">ghost 行内</div></div>
+          <div class="state-cell"><button class="vz-btn vz-btn-danger">解散群组</button><div class="sc-lab">danger 必配确认</div></div>
+          <div class="state-cell"><button class="vz-btn vz-btn-link">查看文档</button><div class="sc-lab">link 仅跳转</div></div>
+          <div class="state-cell"><button class="vz-btn vz-btn-primary" disabled>保存改动</button><div class="sc-lab">disabled</div></div>
+          <div class="state-cell"><button class="vz-btn vz-btn-primary is-loading">保存改动</button><div class="sc-lab">loading 锁死</div></div>
+          <div class="state-cell"><button class="vz-btn vz-btn-primary">提交</button><div class="sc-lab">focus 用 Tab 看</div></div>
+        </div>
+      </div>
+
+      <div class="state-group">
+        <div class="sg-title">徽标 Badge（六语义 · 80% 浅底深字，同含义只用一个变体）</div>
+        <div class="state-row">
+          <div class="state-cell"><span class="vz-badge vz-badge-success">已支付</span><div class="sc-lab">success 完成</div></div>
+          <div class="state-cell"><span class="vz-badge vz-badge-warning">待审批</span><div class="sc-lab">warning 待办</div></div>
+          <div class="state-cell"><span class="vz-badge vz-badge-danger">已阻断</span><div class="sc-lab">danger 真实高危</div></div>
+          <div class="state-cell"><span class="vz-badge vz-badge-info">草稿</span><div class="sc-lab">info 中性</div></div>
+          <div class="state-cell"><span class="vz-badge vz-badge-processing">同步中</span><div class="sc-lab">processing 进行中</div></div>
+          <div class="state-cell"><span class="vz-badge vz-badge-secondary">已归档</span><div class="sc-lab">secondary 停用</div></div>
+          <div class="state-cell"><span class="vz-dot is-count">8</span><div class="sc-lab">计数红点</div></div>
+          <div class="state-cell"><span class="vz-dot"></span><div class="sc-lab">弱提示圆点</div></div>
+        </div>
+      </div>
+
+      <div class="state-group">
+        <div class="sg-title">表单控件 Form（浏览器原生外观已全部覆盖，不用系统样式）</div>
+        <div class="form-demo">
+          <label class="vz-field">
+            <span class="vz-label-top">赛季名称</span>
+            <input class="vz-input" placeholder="例如 S12 冬季赛">
+            <span class="vz-field-hint">最多 24 字，对外展示用</span>
+          </label>
+          <label class="vz-field">
+            <span class="vz-label-top">比赛模式</span>
+            <span class="vz-select-wrap">
+              <select class="vz-select">
+                <option>单人排位</option>
+                <option>双人组队</option>
+                <option>四人混战</option>
+              </select>
+            </span>
+          </label>
+          <div class="vz-field">
+            <span class="vz-label-top">展示项</span>
+            <div class="vz-check-group">
+              <label class="vz-check"><input type="checkbox" checked><span class="vz-check-text">显示段位</span></label>
+              <label class="vz-check"><input type="checkbox"><span class="vz-check-text">显示最近战绩</span></label>
+            </div>
+          </div>
+          <div class="vz-field">
+            <span class="vz-label-top">默认视角</span>
+            <div class="vz-check-group is-row">
+              <label class="vz-check"><input type="radio" name="view" checked><span class="vz-check-text">俯视</span></label>
+              <label class="vz-check"><input type="radio" name="view"><span class="vz-check-text">跟随</span></label>
+            </div>
+          </div>
+          <div class="vz-field">
+            <span class="vz-label-top">开启赛季</span>
+            <label class="vz-check"><input type="checkbox" class="vz-toggle" checked><span class="vz-check-text">改动即生效</span></label>
+          </div>
+          <div class="vz-field">
+            <span class="vz-label-top">对局音量</span>
+            <div class="vz-range">
+              <div class="vz-range-head"><span>音量</span><b class="vz-range-val">60<small>%</small></b></div>
+              <input type="range" min="0" max="100" value="60" style="--vz-range-p:60%" aria-label="对局音量">
+            </div>
+          </div>
+          <label class="vz-field">
+            <span class="vz-label-top">导入名单</span>
+            <span class="vz-file"><span class="vz-file-name">点击选择或拖入 CSV</span><span class="vz-file-hint">单文件不超过 2MB</span><input type="file" accept=".csv"></span>
+          </label>
+          <label class="vz-field">
+            <span class="vz-label-top">备注</span>
+            <textarea class="vz-textarea" placeholder="写点给选手看的说明"></textarea>
+          </label>
+        </div>
+      </div>
+
+      <div class="state-group">
+        <div class="sg-title">表格 Table（文本左、数值与时间右、勾选居中，操作列定宽贴右）</div>
+        <div class="vz-table-wrap">
+          <table class="vz-table">
+            <thead>
+              <tr>
+                <th class="is-check"><input type="checkbox" class="vz-checkbox" aria-label="全选"></th>
+                <th>选手</th>
+                <th class="is-num">积分</th>
+                <th class="is-num">胜率</th>
+                <th class="is-date">最后对局</th>
+                <th class="is-actions">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="is-check"><input type="checkbox" class="vz-checkbox" aria-label="选择 VZqwq"></td>
+                <td class="is-key">VZqwq</td>
+                <td class="is-num">1,284</td>
+                <td class="is-num">63.5%</td>
+                <td class="is-date">2026-11-21 22:04</td>
+                <td class="is-actions"><button class="vz-btn vz-btn-ghost">详情</button></td>
+              </tr>
+              <tr>
+                <td class="is-check"><input type="checkbox" class="vz-checkbox" aria-label="选择 ya7"></td>
+                <td class="is-key">ya7</td>
+                <td class="is-num">1,102</td>
+                <td class="is-num">58.1%</td>
+                <td class="is-date">2026-11-20 19:36</td>
+                <td class="is-actions"><button class="vz-btn vz-btn-ghost">详情</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="vz-pagination">
+          <span class="vz-pagination-total">共 128 条 · 每页 20 条</span>
+          <span class="vz-pagination-pages">
+            <button class="vz-pagination-btn" disabled>上一页</button>
+            <button class="vz-pagination-btn is-active">1</button>
+            <button class="vz-pagination-btn">2</button>
+            <button class="vz-pagination-btn">下一页</button>
+          </span>
+        </div>
+      </div>
+
+      <div class="state-group">
+        <div class="sg-title">浮层 Overlay（点开看落点与尺寸，录入层不响应点遮罩关闭）</div>
+        <div class="state-row">
+          <button class="vz-btn vz-btn-primary" data-demo-open="modal">打开弹窗 520</button>
+          <button class="vz-btn vz-btn-secondary" data-demo-open="modal-sm">小弹窗 400</button>
+          <button class="vz-btn vz-btn-secondary" data-demo-open="drawer">抽屉 600</button>
+          <button class="vz-btn vz-btn-danger" data-demo-open="confirm">危险确认</button>
+        </div>
+      </div>
+
+      <div class="state-group">
+        <div class="sg-title">空态 Empty（不许留只有表头的死表，说清原因并给出口）</div>
+        <div class="vz-table-wrap">
+          <div class="vz-state">
+            <span class="vz-state-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
+            <span class="vz-state-title">还没有符合条件的记录</span>
+            <span class="vz-state-desc">当前筛选提示区间内没有对局，换个时间范围或清掉筛选再看看</span>
+            <span class="vz-state-actions"><button class="vz-btn vz-btn-secondary">清空筛选</button><button class="vz-btn vz-btn-primary">新建赛季</button></span>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- 7. 图标 -->
@@ -709,6 +854,65 @@
       });
     });
   })();
+  </script>
+<script>
+    /* 浮层演示：只负责开关 show，行为与业务页一致 */
+    (function () {
+      var layer = document.createElement('div');
+      layer.innerHTML =
+        '<div class="vz-modal-overlay" id="demoModal"><div class="vz-modal">' +
+          '<div class="vz-modal-head"><div><div class="vz-modal-title">确认提交本赛季结果？</div>' +
+          '<div class="vz-modal-sub">提交后积分与排名立即生效，撤销要走后台回滚</div></div>' +
+          '<button class="vz-modal-close" data-demo-close aria-label="关闭">×</button></div>' +
+          '<div class="vz-modal-body"><label class="vz-field"><span class="vz-label-top">结算备注</span>' +
+          '<input class="vz-input" placeholder="给选手看的说明，可留空"></label></div>' +
+          '<div class="vz-modal-foot"><span class="vz-modal-foot-extra"><span class="vz-badge vz-badge-warning">待结算 12 场</span></span>' +
+          '<button class="vz-btn vz-btn-secondary" data-demo-close>取消</button>' +
+          '<button class="vz-btn vz-btn-primary">确认提交</button></div>' +
+        '</div></div>' +
+        '<div class="vz-modal-overlay" id="demoModalSm"><div class="vz-modal vz-modal-sm">' +
+          '<div class="vz-modal-head"><div class="vz-modal-title">重置房间密码？</div></div>' +
+          '<div class="vz-modal-body">新密码会立刻发给房主，旧密码失效。</div>' +
+          '<div class="vz-modal-foot"><button class="vz-btn vz-btn-secondary" data-demo-close>取消</button>' +
+          '<button class="vz-btn vz-btn-primary">重置密码</button></div>' +
+        '</div></div>' +
+        '<div class="vz-modal-overlay" id="demoConfirm"><div class="vz-modal vz-modal-sm is-danger">' +
+          '<div class="vz-modal-head"><div class="vz-modal-title">确定解散技术研发部群组？</div></div>' +
+          '<div class="vz-modal-body">该群组下的 3 个赛季记录与 18 条对局流水会一起删除，删完找不回来。</div>' +
+          '<div class="vz-modal-foot"><button class="vz-btn vz-btn-secondary" data-demo-close>先留着</button>' +
+          '<button class="vz-btn vz-btn-danger">彻底删除（3 项）</button></div>' +
+        '</div></div>' +
+        '<div class="vz-drawer-overlay" id="demoDrawer"><div class="vz-drawer vz-drawer-md">' +
+          '<div class="vz-drawer-head"><span class="vz-section-title">赛季详情</span>' +
+          '<button class="vz-modal-close" data-demo-close aria-label="关闭">×</button></div>' +
+          '<div class="vz-drawer-body"><div class="vz-desc-grid">' +
+          '<div class="vz-desc-item"><span class="vz-desc-label">赛季名称</span><span class="vz-desc-value">S12 冬季赛</span></div>' +
+          '<div class="vz-desc-item"><span class="vz-desc-label">参赛人数</span><span class="vz-desc-value is-num">1,284</span></div>' +
+          '<div class="vz-desc-item"><span class="vz-desc-label">开始时间</span><span class="vz-desc-value is-num">2026-11-01 00:00</span></div>' +
+          '<div class="vz-desc-item"><span class="vz-desc-label">状态</span><span class="vz-desc-value"><span class="vz-badge vz-badge-processing">进行中</span></span></div>' +
+          '</div></div>' +
+          '<div class="vz-drawer-foot"><button class="vz-btn vz-btn-secondary" data-demo-close>关闭</button>' +
+          '<button class="vz-btn vz-btn-primary">编辑规则</button></div>' +
+        '</div></div>';
+      document.body.appendChild(layer);
+      var map = { modal: 'demoModal', 'modal-sm': 'demoModalSm', confirm: 'demoConfirm', drawer: 'demoDrawer' };
+      document.querySelectorAll('[data-demo-open]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var el = document.getElementById(map[btn.getAttribute('data-demo-open')]);
+          if (el) el.classList.add('show');
+        });
+      });
+      layer.addEventListener('click', function (e) {
+        if (e.target.hasAttribute('data-demo-close') || e.target.classList.contains('vz-modal-overlay') || e.target.classList.contains('vz-drawer-overlay')) {
+          var t = e.target.closest('.vz-modal-overlay, .vz-drawer-overlay');
+          if (t) t.classList.remove('show');
+        }
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        layer.querySelectorAll('.show').forEach(function (el) { el.classList.remove('show'); });
+      });
+    })();
   </script>
 </body>
 </html>

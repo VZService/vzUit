@@ -1,0 +1,188 @@
+/* 按钮层：五档变体配六种状态，一个操作区只许有一个主按钮。
+   变体：primary 实心品牌，一次只一个；secondary 浅底或微边框，常规动作；
+        ghost 表格行内动作；danger 危险动作必配二次确认；link 仅带跳转语义。
+   六态：default / hover / active（下沉 1px）/ disabled / loading（锁死防重复提交）/ focus-visible。
+   hover 服务鼠标，focus 服务键盘，两套都要有，不能互相顶替。
+   宽度不许写死：min-width 80px 配 padding，短词膨胀时才不会撑破（出海语言长 2 到 3 倍）。 */
+
+.vz-btn,
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-login,
+.btn-edit,
+.btn-delete {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--vz-space-2);
+  min-width: 80px;
+  height: var(--vz-control-h);
+  padding: 0 var(--vz-space-4);
+  border: 1px solid transparent;
+  border-radius: var(--vz-radius-md);
+  background: transparent;
+  color: var(--vz-text);
+  font-family: var(--vz-font-ui);
+  font-size: var(--vz-type-body-size);
+  line-height: 1;
+  font-weight: var(--vz-fw-medium);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--vz-dur-fast), border-color var(--vz-dur-fast),
+              color var(--vz-dur-fast), box-shadow var(--vz-dur-fast), transform var(--vz-dur-fast);
+}
+.vz-btn-sm { min-width: 0; height: var(--vz-control-h-sm); padding: 0 var(--vz-space-3); font-size: var(--vz-type-caption-size); }
+.vz-btn-lg { min-width: 96px; height: var(--vz-control-h-lg); padding: 0 var(--vz-space-5); }
+.vz-btn-block { width: 100%; }
+.vz-btn-icon { min-width: 0; width: var(--vz-control-h); padding: 0; }
+
+.vz-btn > svg,
+.vz-btn > .ico {
+  width: var(--vz-icon-md);
+  height: var(--vz-icon-md);
+  flex: none;
+  /* 图标视觉体量高于字母，下移 1/8 字高对齐 x-height */
+  transform: translateY(var(--vz-icon-shift));
+}
+
+/* 主按钮：实心品牌，一屏最多一个 */
+.vz-btn-primary,
+.btn-primary,
+.btn-login {
+  background: var(--vz-primary);
+  color: #ffffff;
+  border-color: transparent;
+}
+.vz-btn-primary:hover,
+.btn-primary:hover,
+.btn-login:hover {
+  background: var(--vz-primary-hover);
+  box-shadow: var(--vz-shadow-primary);
+}
+.vz-btn-primary:active,
+.btn-primary:active,
+.btn-login:active { background: var(--vz-primary-active); box-shadow: none; transform: translateY(1px); }
+
+/* 次按钮：微边框浅底，常规与辅助动作，也是审批类二选一场景的中立选项 */
+.vz-btn-secondary,
+.btn-secondary {
+  background: var(--vz-bg-subtle);
+  border-color: var(--vz-border-1);
+  color: var(--vz-text);
+}
+.vz-btn-secondary:hover,
+.btn-secondary:hover {
+  background: var(--vz-surface-hover);
+  border-color: var(--vz-border-3);
+}
+.vz-btn-secondary:active,
+.btn-secondary:active { transform: translateY(1px); }
+
+/* 幽灵按钮：表格行内与工具条，省横向空间 */
+.vz-btn-ghost,
+.btn-edit {
+  min-width: 0;
+  padding: 0 var(--vz-space-2);
+  background: transparent;
+  border-color: transparent;
+  color: var(--vz-text-secondary);
+}
+.vz-btn-ghost:hover,
+.btn-edit:hover { background: var(--vz-surface-hover); color: var(--vz-text); }
+.vz-btn-ghost:active,
+.btn-edit:active { transform: translateY(1px); }
+
+/* 危险按钮：醒目标红，不许拿主按钮硬改色，必须配二次确认或可撤销 */
+.vz-btn-danger,
+.btn-danger,
+.btn-delete {
+  background: var(--vz-danger);
+  color: #ffffff;
+  border-color: transparent;
+}
+.vz-btn-danger:hover,
+.btn-danger:hover,
+.btn-delete:hover { background: var(--vz-danger-2); }
+.vz-btn-danger:active,
+.btn-danger:active,
+.btn-delete:active { transform: translateY(1px); }
+/* 行内删除动作走幽灵红，不铺整块红底 */
+.btn-delete.vz-btn-ghost,
+.vz-btn-danger.vz-btn-ghost {
+  background: transparent;
+  color: var(--vz-danger);
+  border-color: transparent;
+}
+.vz-btn-danger.vz-btn-ghost:hover,
+.btn-delete.vz-btn-ghost:hover { background: var(--vz-danger-bg); }
+
+/* 链接按钮：只表达跳转语义，当前页的原地操作不许用 link 假扮 */
+.vz-btn-link {
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--vz-brand-from);
+  text-decoration: none;
+}
+.vz-btn-link:hover { color: var(--vz-primary-hover); text-decoration: underline; text-underline-offset: 2px; }
+
+/* 禁用：置灰但仍可读，光标明示不可点 */
+.vz-btn:disabled,
+.vz-btn[aria-disabled="true"],
+.vz-btn.is-disabled,
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-danger:disabled {
+  background: var(--vz-bg-disabled);
+  border-color: var(--vz-border-1);
+  color: var(--vz-text-disabled);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 加载态：嵌转圈并锁死，防重复提交与重复扣费 */
+.vz-btn.is-loading { cursor: progress; color: transparent; }
+.vz-btn.is-loading > * { visibility: hidden; }
+.vz-btn.is-loading::after {
+  content: "";
+  position: absolute;
+  width: var(--vz-icon-md);
+  height: var(--vz-icon-md);
+  /* 主按钮实心品牌底上的转圈轨道，白色半透明是唯一贴合的取法 */
+  /* vz-allow: alpha 实心按钮上的加载环需要白透明轨道 */
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #ffffff;
+  border-radius: var(--vz-radius-pill);
+  animation: vz-btn-spin .7s linear infinite;
+}
+.vz-btn-secondary.is-loading::after,
+.vz-btn-ghost.is-loading::after {
+  border-color: var(--vz-border-3);
+  border-top-color: var(--vz-primary);
+}
+@keyframes vz-btn-spin { to { transform: rotate(360deg); } }
+
+/* 焦点环只给键盘，鼠标点完不留框 */
+.vz-btn:focus-visible,
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-danger:focus-visible,
+.btn-login:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--vz-bg), 0 0 0 4px var(--vz-border-focus);
+}
+
+/* 按钮组：相邻按钮间距 8，整组右对齐放 footer */
+.vz-btn-group { display: inline-flex; align-items: center; gap: var(--vz-space-2); flex-wrap: wrap; }
+.vz-btn-group.is-end { margin-left: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .vz-btn, .btn-primary, .btn-secondary, .btn-danger, .btn-login, .btn-edit, .btn-delete { transition-duration: .01ms; }
+}

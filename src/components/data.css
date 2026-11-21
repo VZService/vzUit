@@ -1,0 +1,476 @@
+/* 数据展示层：表格、分页、徽标、标签、选项卡、描述列表、批量操作条、空态
+   全部按 B 端设计系统的硬约束写，页面侧不要另起一套同名组件。
+
+   表格三向对齐：文本左、数值与时间右（等宽数字）、勾选居中。
+   数值区一律 font-variant-numeric: tabular-nums，防滚动换数时宽度跳动。
+   横滚只在表格自己的容器里发生，页面不许出横向滚动条。 */
+
+/* 页面标题：独立在内容卡之上，不塞进卡片里，右侧放主操作 */
+.vz-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--vz-space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--vz-space-4);
+}
+.vz-page-header h1,
+.vz-page-title {
+  font-size: var(--vz-type-page-size);
+  line-height: var(--vz-type-page-line);
+  font-weight: var(--vz-fw-semibold);
+  color: var(--vz-text);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.vz-page-desc {
+  margin-top: var(--vz-space-1);
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-type-body-line);
+  color: var(--vz-text-secondary);
+}
+.vz-page-actions { display: flex; align-items: center; gap: var(--vz-space-2); flex-wrap: wrap; }
+.vz-section-title {
+  font-size: var(--vz-type-section-size);
+  line-height: var(--vz-type-section-line);
+  font-weight: var(--vz-fw-semibold);
+  color: var(--vz-text);
+  text-wrap: balance;
+}
+.vz-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vz-space-3);
+  margin-bottom: var(--vz-space-3);
+}
+
+/* 承载面板：常规卡片纯平，只用 0.5px 微线切分，阴影只给浮层 */
+.vz-card,
+.vz-panel {
+  background: var(--vz-bg-surface);
+  border: 1px solid var(--vz-hairline);
+  border-radius: var(--vz-radius);
+  padding: var(--vz-space-4);
+}
+.vz-panel { border-radius: var(--vz-radius-lg); padding: var(--vz-space-3); }
+.vz-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vz-space-3);
+  padding-bottom: var(--vz-space-3);
+  margin-bottom: var(--vz-space-3);
+  border-bottom: 1px solid var(--vz-hairline);
+}
+
+/* 徽标：80% 用浅底深字，实心只留给极小未读红点与灾难级提示
+   语义固定六种，同含义全项目只用一个变体，不许按心情换色 */
+.vz-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vz-space-1);
+  height: 20px;
+  padding: 0 var(--vz-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--vz-radius-sm);
+  font-size: var(--vz-type-caption-size);
+  line-height: 1;
+  font-weight: var(--vz-fw-medium);
+  white-space: nowrap;
+  background: var(--vz-bg-subtle);
+  color: var(--vz-text-secondary);
+  border-color: var(--vz-border-1);
+}
+.vz-badge-success { background: var(--vz-success-bg); color: var(--vz-success); border-color: var(--vz-success-border); }
+.vz-badge-warning { background: var(--vz-warning-bg); color: var(--vz-warning); border-color: var(--vz-warning-border); }
+.vz-badge-danger  { background: var(--vz-danger-bg);  color: var(--vz-danger);  border-color: var(--vz-danger-border); }
+.vz-badge-info    { background: var(--vz-info-bg);    color: var(--vz-info);    border-color: var(--vz-info-border); }
+.vz-badge-processing {
+  background: var(--vz-primary-subtle);
+  color: var(--vz-brand-from);
+  border-color: transparent;
+}
+.vz-badge-processing::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: var(--vz-radius-pill);
+  background: currentColor;
+  animation: vz-badge-pulse 1.6s ease-in-out infinite;
+}
+.vz-badge-secondary { background: var(--vz-bg-subtle); color: var(--vz-text-tertiary); border-color: var(--vz-border-1); }
+@keyframes vz-badge-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+/* 计数红点：强阻断带数字，弱提示 6 到 8 无字圆点，营销推送不许挂红点 */
+.vz-dot {
+  display: inline-block;
+  min-width: 8px;
+  height: 8px;
+  border-radius: var(--vz-radius-pill);
+  background: var(--vz-danger);
+  flex: none;
+}
+.vz-dot.is-count {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 var(--vz-space-1);
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: var(--vz-fw-semibold);
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+  text-align: center;
+}
+.vz-dot-anchor { position: relative; display: inline-flex; }
+.vz-dot-anchor > .vz-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  /* 数字进位时只向左膨胀，不向右溢出 */
+  transform: translateX(50%);
+  transform-origin: right center;
+}
+
+/* 标签：主观分类元数据，可删可筛，跟徽标不是一回事 */
+.vz-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vz-space-1);
+  height: 22px;
+  padding: 0 var(--vz-space-2);
+  border-radius: var(--vz-radius-sm);
+  border: 1px solid var(--vz-border-1);
+  background: var(--vz-bg-subtle);
+  color: var(--vz-text-secondary);
+  font-size: var(--vz-type-caption-size);
+  white-space: nowrap;
+}
+.vz-tag-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--vz-text-tertiary);
+  cursor: pointer;
+  border-radius: var(--vz-radius-xs);
+}
+.vz-tag-close:hover { color: var(--vz-danger); background: var(--vz-danger-bg); }
+
+/* 筛选条三形态：1 到 3 项单行内联，4 到 8 项折叠面板，9 项以上进高级筛选抽屉 */
+.vz-filter {
+  display: flex;
+  align-items: center;
+  gap: var(--vz-space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--vz-space-3);
+}
+.vz-filter > .vz-input-group,
+.vz-filter > .vz-select-wrap { width: auto; min-width: 160px; flex: 0 1 auto; }
+.vz-filter-spacer { margin-left: auto; }
+.vz-filter-panel {
+  display: none;
+  padding-top: var(--vz-space-3);
+  margin-bottom: var(--vz-space-3);
+  border-top: 1px solid var(--vz-hairline);
+}
+.vz-filter-panel.is-open { display: block; }
+.vz-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--vz-space-3);
+}
+
+/* 表格：外层负责横滚，表头吸顶，操作列定宽贴右 */
+.vz-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--vz-hairline);
+  border-radius: var(--vz-radius-lg);
+  background: var(--vz-bg-surface);
+}
+.vz-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-type-body-line);
+  color: var(--vz-text);
+}
+.vz-table th {
+  position: sticky;
+  top: 0;
+  /* 表头只在表格自己的层叠上下文里压住正文，不参与全局层级，故不进 --vz-z-* */
+  /* vz-allow: z-index 吸顶表头只需盖住同表格的单元格 */
+  z-index: 1;
+  padding: var(--vz-space-3) var(--vz-space-4);
+  background: var(--vz-bg-subtle);
+  border-bottom: 1px solid var(--vz-border-1);
+  font-size: var(--vz-type-caption-size);
+  line-height: var(--vz-type-caption-line);
+  font-weight: var(--vz-fw-medium);
+  color: var(--vz-text-secondary);
+  text-align: left;
+  white-space: nowrap;
+}
+.vz-table td {
+  padding: var(--vz-space-3) var(--vz-space-4);
+  border-bottom: 1px solid var(--vz-border-0);
+  vertical-align: middle;
+}
+.vz-table tbody tr:last-child td { border-bottom: 0; }
+.vz-table tbody tr:hover td { background: var(--vz-surface-hover); }
+.vz-table .is-num,
+.vz-table .is-date {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.vz-table .is-center { text-align: center; }
+.vz-table .is-actions {
+  width: 120px;
+  text-align: right;
+  white-space: nowrap;
+}
+.vz-table .is-check { width: 40px; text-align: center; }
+.vz-table .is-key { font-weight: var(--vz-fw-medium); }
+.vz-table .is-sub { color: var(--vz-text-tertiary); font-size: var(--vz-type-caption-size); }
+.vz-table.is-compact th,
+.vz-table.is-compact td { padding: var(--vz-space-2) var(--vz-space-3); }
+/* 固定操作列：贴右并加一条微阴影，提示这里还能滑 */
+.vz-table th.is-actions,
+.vz-table td.is-actions {
+  position: sticky;
+  right: 0;
+  background: var(--vz-bg-surface);
+}
+.vz-table th.is-actions { background: var(--vz-bg-subtle); }
+.vz-table tbody tr:hover td.is-actions { background: var(--vz-bg-surface); }
+.vz-table td.is-actions::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 1px;
+  background: var(--vz-border-1);
+}
+
+/* 行内动作只给 ghost 或 link，超过三个收进更多菜单 */
+.vz-table .is-actions .vz-btn { height: var(--vz-control-h-sm); padding: 0 var(--vz-space-2); }
+.vz-table .is-actions .vz-btn + .vz-btn { margin-left: var(--vz-space-1); }
+
+/* 分页：总数、每页条数、页码三段齐，别手搓 */
+.vz-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vz-space-3);
+  flex-wrap: wrap;
+  padding: var(--vz-space-3) 0 0;
+  font-size: var(--vz-type-caption-size);
+  color: var(--vz-text-tertiary);
+}
+.vz-pagination-total { font-variant-numeric: tabular-nums; }
+.vz-pagination-pages { display: flex; align-items: center; gap: var(--vz-space-1); }
+.vz-pagination-btn {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 var(--vz-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--vz-radius-sm);
+  background: transparent;
+  color: var(--vz-text-secondary);
+  font-size: var(--vz-type-caption-size);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background-color var(--vz-dur-fast), color var(--vz-dur-fast), border-color var(--vz-dur-fast);
+}
+.vz-pagination-btn:hover { background: var(--vz-surface-hover); color: var(--vz-text); }
+.vz-pagination-btn.is-active {
+  background: var(--vz-primary-subtle);
+  border-color: transparent;
+  color: var(--vz-brand-from);
+  font-weight: var(--vz-fw-semibold);
+}
+.vz-pagination-btn:disabled { color: var(--vz-text-disabled); cursor: not-allowed; background: transparent; }
+
+/* 选项卡：单模块内切换，跨大功能用侧边导航，不做三层横向菜单 */
+.vz-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--vz-space-5);
+  border-bottom: 1px solid var(--vz-hairline);
+  margin-bottom: var(--vz-space-4);
+  overflow-x: auto;
+}
+.vz-tab {
+  position: relative;
+  padding: var(--vz-space-2) 0;
+  border: 0;
+  background: transparent;
+  color: var(--vz-text-secondary);
+  font-size: var(--vz-type-body-size);
+  font-weight: var(--vz-fw-medium);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--vz-dur-fast);
+}
+.vz-tab:hover { color: var(--vz-text); }
+.vz-tab.is-active { color: var(--vz-text); }
+.vz-tab.is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  border-radius: var(--vz-radius-pill);
+  background: var(--vz-primary);
+}
+.vz-tab-count {
+  margin-left: var(--vz-space-1);
+  font-size: var(--vz-type-caption-size);
+  font-variant-numeric: tabular-nums;
+  color: var(--vz-text-tertiary);
+}
+
+/* 描述列表：2 到 3 列自适应，标签用次级色，值用主色加中粗 */
+.vz-desc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--vz-space-4) var(--vz-space-6);
+}
+.vz-desc-item { display: flex; flex-direction: column; gap: var(--vz-space-1); min-width: 0; }
+.vz-desc-label {
+  font-size: var(--vz-type-caption-size);
+  line-height: var(--vz-type-caption-line);
+  color: var(--vz-text-secondary);
+}
+.vz-desc-value {
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-type-body-line);
+  font-weight: var(--vz-fw-medium);
+  color: var(--vz-text);
+  overflow-wrap: anywhere;
+}
+.vz-desc-value.is-num { font-variant-numeric: tabular-nums; }
+
+/* 批量操作条：勾选后才从底部滑出，三要素齐（数量、动作、取消） */
+.vz-bulkbar {
+  position: fixed;
+  left: 50%;
+  bottom: var(--vz-space-5);
+  z-index: var(--vz-z-drawer);
+  display: flex;
+  align-items: center;
+  gap: var(--vz-space-3);
+  padding: var(--vz-space-2) var(--vz-space-2) var(--vz-space-2) var(--vz-space-4);
+  border: 1px solid var(--vz-border-1);
+  border-radius: var(--vz-radius-lg);
+  background: var(--vz-popover-bg);
+  box-shadow: var(--vz-shadow-popover);
+  transform: translate(-50%, 150%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--vz-dur) cubic-bezier(0.22,1,0.36,1), opacity var(--vz-dur);
+}
+.vz-bulkbar.is-open { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+.vz-bulkbar-count {
+  font-size: var(--vz-type-body-size);
+  color: var(--vz-text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.vz-bulkbar-actions { display: flex; align-items: center; gap: var(--vz-space-2); }
+
+/* 五态：空、加载、出错、无权限、部分可见
+   空态不许留一张只有表头的死表，必须说清为什么空并给出出口 */
+.vz-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--vz-space-2);
+  padding: var(--vz-space-7) var(--vz-space-4);
+  text-align: center;
+  color: var(--vz-text-secondary);
+}
+.vz-state-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--vz-radius-pill);
+  background: var(--vz-bg-subtle);
+  color: var(--vz-text-tertiary);
+}
+.vz-state-title {
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-type-body-line);
+  font-weight: var(--vz-fw-medium);
+  color: var(--vz-text);
+}
+.vz-state-desc {
+  font-size: var(--vz-type-caption-size);
+  line-height: var(--vz-type-caption-line);
+  color: var(--vz-text-tertiary);
+  max-width: 42ch;
+}
+.vz-state-actions { display: flex; align-items: center; gap: var(--vz-space-2); margin-top: var(--vz-space-2); }
+.vz-state.is-error .vz-state-icon { background: var(--vz-danger-bg); color: var(--vz-danger); }
+.vz-state.is-loading .vz-state-icon { background: transparent; }
+
+/* 加载：小于 1 秒不铺骨架屏，超过 2 秒才给带文案的指示器 */
+.vz-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--vz-border-2);
+  border-top-color: var(--vz-primary);
+  border-radius: var(--vz-radius-pill);
+  animation: vz-spin .7s linear infinite;
+}
+.vz-spinner-lg { width: 24px; height: 24px; border-width: 3px; }
+@keyframes vz-spin { to { transform: rotate(360deg); } }
+
+.vz-skeleton {
+  display: block;
+  border-radius: var(--vz-radius-sm);
+  background: linear-gradient(90deg, var(--vz-bg-subtle) 0%, var(--vz-surface-raised) 50%, var(--vz-bg-subtle) 100%);
+  background-size: 200% 100%;
+  animation: vz-skeleton 1.4s ease-in-out infinite;
+}
+@keyframes vz-skeleton { to { background-position: -200% 0; } }
+
+/* KPI 卡：3 到 4 个统一口径，数值等宽，同环比单列 */
+.vz-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--vz-space-4);
+  margin-bottom: var(--vz-space-5);
+}
+.vz-kpi {
+  padding: var(--vz-space-4);
+  border: 1px solid var(--vz-hairline);
+  border-radius: var(--vz-radius);
+  background: var(--vz-bg-surface);
+}
+.vz-kpi-label {
+  font-size: var(--vz-type-caption-size);
+  line-height: var(--vz-type-caption-line);
+  color: var(--vz-text-secondary);
+}
+.vz-kpi-value {
+  margin-top: var(--vz-space-1);
+  font-size: var(--vz-type-page-size);
+  line-height: var(--vz-type-page-line);
+  font-weight: var(--vz-fw-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--vz-text);
+}
+.vz-kpi-trend { margin-top: var(--vz-space-1); font-size: var(--vz-type-caption-size); font-variant-numeric: tabular-nums; }
+.vz-kpi-trend.is-up { color: var(--vz-success); }
+.vz-kpi-trend.is-down { color: var(--vz-danger); }

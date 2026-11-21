@@ -1,4 +1,10 @@
+/* 组件总入口，顺序固定：token 打底，原子控件，数据展示，浮层反馈，最后是专用组件。
+   站点样式一律在本文件之后引，不许插在中间打断这层顺序。 */
 @import url('tokens.css');
+@import url('components/button.css');
+@import url('components/controls.css');
+@import url('components/data.css');
+@import url('components/feedback.css');
 @import url('components/seg.css');
 @import url('components/switch.css');
 @import url('components/range.css');
@@ -198,81 +204,8 @@ body {
 }
 
 
-.btn-login {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--vz-primary-gradient);
-  border: none;
-  color: var(--vz-white);
-  padding: 0.5rem 1.5rem;
-  border-radius: var(--vz-radius-pill);
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  transition: all 0.25s;
-  text-decoration: none;
-}
-.btn-login:hover {
-  box-shadow: 0 12px 32px rgba(124,58,237,0.3);
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--vz-primary-gradient);
-  border: none;
-  color: var(--vz-white);
-  padding: 0.6rem 1.8rem;
-  border-radius: var(--vz-radius-pill);
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: all 0.25s;
-  text-decoration: none;
-}
-.btn-primary:hover {
-  box-shadow: 0 12px 32px rgba(124,58,237,0.3);
-}
-
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--vz-glass-3);
-  border: 1px solid var(--vz-border-2);
-  color: var(--vz-white);
-  padding: 0.6rem 1.8rem;
-  border-radius: var(--vz-radius-pill);
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: all 0.25s;
-  text-decoration: none;
-}
-.btn-secondary:hover {
-  background: var(--vz-surface-raised);
-  border-color: var(--vz-border-3);
-}
-
-.btn-danger {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: linear-gradient(135deg, var(--vz-danger), var(--vz-danger-2));
-  border: none;
-  color: var(--vz-white);
-  padding: 0.4rem 1.2rem;
-  border-radius: var(--vz-radius-pill);
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.25s;
-}
-.btn-danger:hover {
-  box-shadow: 0 8px 24px rgba(244,63,94,0.3);
-}
+/* 按钮规则统一挪到 components/button.css：五档变体、六种状态与旧名兼容都在那份。
+   .btn-login / .btn-primary / .btn-secondary / .btn-danger 继续可用，只是实现换了位置。 */
 
 
 .main-content {
@@ -285,21 +218,23 @@ body {
 
 
 .section-title {
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: var(--vz-type-page-size);
+  line-height: var(--vz-type-page-line);
+  font-weight: var(--vz-fw-semibold);
   color: var(--vz-text);
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--vz-space-4);
   letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 
 .post-card {
-  background: var(--vz-surface);
-  border: 1px solid var(--vz-glass-4);
+  background: var(--vz-bg-surface);
+  border: 1px solid var(--vz-hairline);
   border-radius: var(--vz-radius);
-  padding: 1.2rem;
-  margin-bottom: 1.2rem;
-  transition: all 0.3s cubic-bezier(0.2,0,0,1);
+  padding: var(--vz-space-4);
+  margin-bottom: var(--vz-space-3);
+  transition: background-color var(--vz-dur), border-color var(--vz-dur);
   cursor: pointer;
   /* 卡片是 <a>，交给 vz-nav.js 的 PJAX 接管，这里去掉链接默认样式 */
   display: block;
@@ -309,7 +244,6 @@ body {
 .post-card:hover {
   background: var(--vz-surface-hover);
   border-color: var(--vz-border-hover);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 }
 
 .post-title {
@@ -346,26 +280,54 @@ body {
 }
 
 
-input, textarea, select {
+/* 裸元素兜底：没加类的 input / textarea / select 也走自定义外观，不出现系统原生边框与箭头 */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+textarea,
+select {
   width: 100%;
-  padding: 0.7rem 1.2rem;
-  background: var(--vz-glass-2);
+  min-height: var(--vz-control-h);
+  padding: 0 var(--vz-space-3);
+  margin-bottom: var(--vz-space-3);
+  background: var(--vz-bg-subtle);
   border: 1px solid var(--vz-border-1);
-  border-radius: 14px;
-  color: var(--vz-white);
-  font-size: 0.95rem;
-  font-family: inherit;
-  margin-bottom: 0.8rem;
+  border-radius: var(--vz-radius-sm);
+  color: var(--vz-text);
+  font-family: var(--vz-font-ui);
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-type-body-line);
   outline: none;
-  transition: all 0.25s;
+  transition: border-color var(--vz-dur-fast), background-color var(--vz-dur-fast), box-shadow var(--vz-dur-fast);
 }
-input:focus, textarea:focus, select:focus {
-  border-color: rgba(167,139,250,0.3);
-  background: var(--vz-glass-4);
-  box-shadow: 0 0 0 4px rgba(167,139,250,0.04);
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):hover,
+textarea:hover,
+select:hover { border-color: var(--vz-border-2); }
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus,
+textarea:focus,
+select:focus {
+  border-color: var(--vz-primary);
+  background: var(--vz-bg-surface);
+  box-shadow: 0 0 0 3px var(--vz-primary-subtle);
 }
-textarea { min-height: 200px; resize: vertical; }
-select option { background: #12152a; }
+input:not([type="checkbox"]):not([type="radio"]):disabled,
+textarea:disabled,
+select:disabled {
+  background: var(--vz-bg-disabled);
+  color: var(--vz-text-disabled);
+  cursor: not-allowed;
+}
+textarea { min-height: 120px; padding: var(--vz-space-2) var(--vz-space-3); resize: vertical; }
+/* select 的原生箭头去掉，右侧用背景图画一个 chevron，深浅主题共用一个中性灰 */
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: var(--vz-space-7);
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right var(--vz-space-3) center;
+  background-size: 12px 12px;
+}
+select option { background: var(--vz-popover-bg); color: var(--vz-text); }
 
 
 .admin-actions { margin-top: 0.8rem; display: flex; gap: 0.5rem; }
@@ -390,63 +352,57 @@ select option { background: #12152a; }
 .btn-delete:hover { background: rgba(244,63,94,0.15); }
 
 
-/* 弹窗遮罩：与 .vz-modal-overlay 同一套显隐。
-   display 不能参与过渡（display:none 会把元素移出渲染树），改用 opacity + visibility；
-   隐藏态的 visibility 延迟到淡出结束才跳变，否则元素瞬间消失、看不到淡出。
-   时长 .28s 与 vzuit.js 的 VZ_MODAL_MS 保持一致。 */
+/* 旧弹窗类名兼容层：.modal-overlay / .edit-overlay / .modal / .modal-content 继续可用，
+   观感与 components/feedback.css 的 .vz-modal 同一套，落点 15vh、圆角 16、标题与底栏固定。 */
 .modal-overlay,
 .edit-overlay {
   position: fixed;
   inset: 0;
+  z-index: var(--vz-z-modal);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  z-index: var(--vz-z-overlay);
+  padding: var(--vz-modal-y) var(--vz-space-4) var(--vz-space-6);
   opacity: 0;
   visibility: hidden;
-  /* 关闭后立刻停止接收点击：淡出的那 .28s 里遮罩仍在，不加这条会挡住下层页面 */
   pointer-events: none;
-  transition: opacity .28s ease, visibility 0s linear .28s;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transition: opacity var(--vz-dur-slow) ease, visibility 0s linear var(--vz-dur-slow);
 }
 .modal-overlay.show,
 .edit-overlay.show {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transition: opacity .28s ease, visibility 0s linear 0s;
+  transition: opacity var(--vz-dur-slow) ease, visibility 0s linear 0s;
 }
-.modal-overlay { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
-.edit-overlay { background: rgba(0,0,0,0.5); }
+.modal-overlay { background: var(--vz-scrim); backdrop-filter: blur(4px); }
+.edit-overlay { background: var(--vz-scrim); }
 
-.modal {
-  background: var(--vz-bg-modal);
-  border: 1px solid var(--vz-border-0);
-  border-radius: var(--vz-radius-xl);
-  padding: 2rem;
-  max-width: 480px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.6);
-}
+.modal,
 .modal-content {
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - var(--vz-modal-y) - var(--vz-space-6));
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
   background: var(--vz-bg-modal);
-  border: 1px solid var(--vz-border-0);
+  border: 1px solid var(--vz-border-1);
   border-radius: var(--vz-radius-xl);
-  padding: 1.5rem;
-  width: 90%;
-  max-width: 600px;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+  box-shadow: var(--vz-shadow-dialog);
+  padding: var(--vz-space-5);
 }
-/* 弹窗主体回弹放大（与 .vz-modal 同一套曲线） */
+.modal-content { max-width: 600px; }
 .modal-overlay .modal,
 .modal-overlay .modal-content,
 .modal-overlay .modal-card,
 .edit-overlay .modal,
 .edit-overlay .modal-content,
 .edit-overlay .modal-card {
-  transform: scale(.92);
-  transition: transform .42s cubic-bezier(.34,1.56,.64,1);
+  transform: scale(.96);
+  transition: transform var(--vz-dur-slow) cubic-bezier(.34,1.56,.64,1);
 }
 .modal-overlay.show .modal,
 .modal-overlay.show .modal-content,
@@ -456,20 +412,29 @@ select option { background: #12152a; }
 .edit-overlay.show .modal-card {
   transform: scale(1);
 }
-.modal-content input,
-.modal-content textarea {
-  width: 100%;
-  padding: 0.6rem;
-  background: var(--vz-glass-2);
-  border: 1px solid var(--vz-border-1);
-  border-radius: 14px;
-  color: var(--vz-white);
-  font-family: inherit;
-  margin-top: 0.3rem;
-  box-sizing: border-box;
-  outline: none;
+.modal h3,
+.modal-title {
+  font-size: var(--vz-type-section-size);
+  line-height: var(--vz-type-section-line);
+  font-weight: var(--vz-fw-semibold);
+  color: var(--vz-text);
+  margin-bottom: var(--vz-space-3);
 }
-.modal-content label { display: block; margin-top: 0.8rem; font-weight: 500; color: var(--vz-text-tertiary); font-size: 0.85rem; }
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--vz-space-2);
+  margin-top: var(--vz-space-4);
+}
+.modal-content input,
+.modal-content textarea { margin-top: var(--vz-space-1); }
+.modal-content label {
+  display: block;
+  margin-top: var(--vz-space-3);
+  font-weight: var(--vz-fw-medium);
+  color: var(--vz-text-secondary);
+  font-size: var(--vz-type-caption-size);
+}
 .modal-content textarea { min-height: 120px; }
 
 
@@ -498,13 +463,17 @@ select option { background: #12152a; }
 
 
 .tag {
-  display: inline-block;
-  padding: 0.25rem 1.2rem;
-  border-radius: var(--vz-radius-pill);
-  font-size: 0.8rem;
-  font-weight: 500;
-  background: var(--vz-glass-2);
-  border: 1px solid var(--vz-glass-4);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vz-space-1);
+  height: 22px;
+  padding: 0 var(--vz-space-2);
+  border-radius: var(--vz-radius-sm);
+  font-size: var(--vz-type-caption-size);
+  line-height: 1;
+  font-weight: var(--vz-fw-medium);
+  background: var(--vz-bg-subtle);
+  border: 1px solid var(--vz-border-1);
   color: var(--vz-text-secondary);
 }
 .tag-purple { background: rgba(167,139,250,0.08); border-color: rgba(167,139,250,0.12); color: var(--vz-brand-from); }
@@ -636,19 +605,16 @@ html.js-ready input:not([type="submit"]):not([type="button"]):not([type="checkbo
 /* 不能用 display 切显隐：display:none 会把元素移出渲染树，transition 不生效。改用 opacity + visibility，
    隐藏态的 visibility 延迟到淡出结束才跳变，否则元素瞬间消失、看不到淡出。
    时长常量 .28s 与 vzuit.js 的 VZ_MODAL_MS 必须保持一致。 */
-.vz-modal-overlay{position:fixed;inset:0;z-index:var(--vz-z-modal);background:rgba(8,11,20,0.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility 0s linear .28s;}
-.vz-modal-overlay.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .28s ease,visibility 0s linear 0s;}
-.vz-modal{background:var(--vz-bg-modal);border:1px solid var(--vz-border-1);border-radius:16px;padding:1.5rem;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);transform:scale(.86);transition:transform .42s cubic-bezier(.34,1.56,.64,1);}
-.vz-modal-overlay.show .vz-modal{transform:scale(1);}
-.vz-modal-title{font-size:1rem;font-weight:600;color:var(--vz-text);margin-bottom:0.8rem;}
-.vz-modal-body{font-size:0.9rem;color:var(--vz-text-secondary);line-height:1.5;margin-bottom:1.2rem;}
-.vz-modal-actions{display:flex;gap:0.6rem;justify-content:flex-end;}
-.vz-modal-btn{background:var(--vz-border-1);border:none;color:var(--vz-text-secondary);padding:0.5rem 1.2rem;border-radius:40px;cursor:pointer;font-size:0.85rem;transition:background 0.15s;}
-.vz-modal-btn:hover{background:var(--vz-glass-12);}
-.vz-modal-btn.primary{background:linear-gradient(135deg,var(--vz-primary),var(--vz-brand-9));color:var(--vz-white);}
-.vz-modal-btn.primary:hover{box-shadow:0 4px 12px rgba(124,58,237,0.4);}
-.vz-modal-btn.danger{background:rgba(244,63,94,0.2);color:var(--vz-danger);}
-.vz-modal-btn.danger:hover{background:rgba(244,63,94,0.35);}
+/* .vz-modal-overlay / .vz-modal / 标题 / 主体 的实现在 components/feedback.css，
+   这里只补 VZAlert 与 VZConfirm 运行时动态拼出来的动作区与按钮类。 */
+.vz-modal-actions{display:flex;justify-content:flex-end;gap:var(--vz-space-2);padding:var(--vz-space-3) var(--vz-space-5) var(--vz-space-5);border-top:1px solid var(--vz-hairline);}
+.vz-modal-btn{min-width:80px;height:var(--vz-control-h);padding:0 var(--vz-space-4);border:1px solid var(--vz-border-1);border-radius:var(--vz-radius-md);background:var(--vz-bg-subtle);color:var(--vz-text);font-family:var(--vz-font-ui);font-size:var(--vz-type-body-size);font-weight:var(--vz-fw-medium);cursor:pointer;transition:background-color var(--vz-dur-fast),border-color var(--vz-dur-fast),box-shadow var(--vz-dur-fast);}
+.vz-modal-btn:hover{background:var(--vz-surface-hover);border-color:var(--vz-border-3);}
+.vz-modal-btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--vz-bg),0 0 0 4px var(--vz-border-focus);}
+.vz-modal-btn.primary{background:var(--vz-primary);border-color:transparent;color:#ffffff;}
+.vz-modal-btn.primary:hover{background:var(--vz-primary-hover);}
+.vz-modal-btn.danger{background:var(--vz-danger);border-color:transparent;color:#ffffff;}
+.vz-modal-btn.danger:hover{background:var(--vz-danger-2);}
 
 /* 辅助技术专用：视觉隐藏但屏幕阅读器可读 */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
@@ -662,7 +628,7 @@ html.js-ready input:not([type="submit"]):not([type="button"]):not([type="checkbo
 .vz-field { position:relative;width:100%;margin-bottom:1rem; }
 .vz-input-icon { position:absolute;left:0.9rem;top:50%;transform:translateY(-50%);color:var(--vz-text-disabled);pointer-events:none; }
 .vz-input-round { width:100%;padding:0.6rem 1rem 0.6rem 2.6rem;border:1px solid var(--vz-border-1);border-radius:40px;font-size:0.95rem;box-sizing:border-box; }
-.vz-panel { background:var(--vz-surface); border-radius:20px; padding:1.5rem; box-shadow:0 4px 12px rgba(0,0,0,0.03); border:1px solid var(--vz-border); }
+.vz-panel { background:var(--vz-bg-surface); border-radius:var(--vz-radius); padding:var(--vz-space-4); border:1px solid var(--vz-hairline); }
 .vz-text-strong { font-size:1.1rem; font-weight:600; }
 .vz-maxw-sm { max-width:300px; }
 .vz-input-mono { font-family:'SF Mono','Menlo',monospace;font-size:0.9rem; }
@@ -695,7 +661,7 @@ html.js-ready input:not([type="submit"]):not([type="button"]):not([type="checkbo
 .vz-text-dim { color:var(--vz-text-secondary); }
 .vz-tag-wrap { display:flex;flex-wrap:wrap;gap:0.8rem;margin-top:1rem; }
 .vz-card-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin:2rem 0; }
-.vz-card { background:var(--vz-surface);border:1px solid var(--vz-border);border-radius:20px;padding:1.2rem;transition:all 0.3s; }
+.vz-card { background:var(--vz-bg-surface);border:1px solid var(--vz-hairline);border-radius:var(--vz-radius);padding:var(--vz-space-4);transition:border-color var(--vz-dur), background-color var(--vz-dur); }
 .vz-icon-brand-lg { font-size:2rem;margin-bottom:0.5rem;color:var(--vz-brand-from);display:flex;align-items:center;justify-content:center; }
 .vz-icon-md { width:1.5em;height:1.5em; }
 .vz-card-title { color:var(--vz-text);font-size:1.05rem;font-weight:600;margin-bottom:0.3rem; }

@@ -5,9 +5,18 @@
 每个站点只有一个样式入口，加载顺序固定，不许打乱：
 
 1. `tokens.css` 变量与字体
-2. `vzuit.css` 组件
+2. `vzuit.css` 组件入口，内部按固定顺序引组件层
 3. 站点自有样式 `site.css` 或按页面拆分的 `page-*.css`
-4. 皮肤层（仅浅色或其他需要独立视觉的项目）
+4. 皮肤层（仅其他需要独立品牌色的项目，改 token 不改组件类）
+
+`vzuit.css` 内部的引用顺序也是固定的，插在中间会打乱层叠：
+
+1. `tokens.css` 三层变量
+2. `components/button.css` 按钮五档六态
+3. `components/controls.css` 表单控件与原生外观覆盖
+4. `components/data.css` 表格、分页、徽标、标签、空态
+5. `components/feedback.css` 弹窗、抽屉、气泡确认、横幅、悬停提示
+6. `components/seg.css` `switch.css` `range.css` `toast.css` 专用控件
 
 前三层之外再引入第四份全局 CSS 就视为重复造轮子，改造时合并回站点样式里。
 
@@ -92,3 +101,23 @@
 ```
 
 高亮色不要覆写组件类，改 `--vz-seg-on-bg` 与 `--vz-seg-on-color` 这两个可变点，开关的开态跟着 `--vz-primary` 走。
+
+## 原生控件一律覆盖
+
+浏览器默认外观（边框、内阴影、箭头、系统按钮、勾选框）一律不许露出来。`components/controls.css` 统一处理：
+`select` 的箭头、`checkbox` 与 `radio` 的方块与圆点、开关、滑块、文件按钮、数字框上下箭头、
+搜索框清除按钮、日期图标、进度条、原生 `dialog`、滚动条、自动填充淡黄底、选中文本与占位符。
+
+新控件先在该文件里补类，再来页面用。业务 CSS 里不许就地写 `appearance: none` 之后自己拼一套，
+那会变成第四份实现。第三方库自带的控件覆盖写在站点样式里，规则上方注明来源库与版本。
+
+裸标签也有兜底（`vzuit.css` 里的 `input / textarea / select`），没加类时不会退回系统样式，
+但兜底只覆盖文本类控件，`checkbox` 与 `radio` 必须落到 `.vz-check` 或 `.vz-checkbox`。
+
+## 浮层与数据区的归属
+
+弹窗、抽屉、气泡确认、横幅、悬停提示只在 `feedback.css` 定义；表格、分页、徽标、标签、空态只在 `data.css` 定义。
+站点样式里出现同名类即视为重复实现，要删掉站点那份，改用基座类名。
+
+旧类名 `.modal` `.modal-content` `.modal-overlay` 在 `vzuit.css` 里保留了一层兼容实现，观感与新类一致，
+新代码一律用 `.vz-modal` 系列。

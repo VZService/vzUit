@@ -1,9 +1,13 @@
-/* vzUit 设计 token 唯一来源
-   只放变量与字体声明，不含任何组件类与业务样式。
-   需要完整组件时引用 vzuit.css，只需要颜色/字号/间距时引用本文件。
+/* vzUit 设计 token 唯一来源，三层结构
+   1 基础色盘 palette：只给语义层与组件层取色用，业务代码禁止直接引用
+   2 语义 token：页面底色、承载面、文字、边框、品牌、状态，业务与组件必用这层
+   3 组件 token：组件内部重写点，默认引用语义层，站点只改这一层做皮肤
 
-   字体策略：CDN 为主，本地同路径兜底。各站无需自带字体文件。
-   两种字体分工固定：--vz-font 用于官网与营销页展示（得意黑），--vz-font-ui 用于界面正文与组件（Inter 栈）。 */
+   字体策略：CDN 为主，本地同路径兜底，各站无需自带字体文件。
+   两种字体分工固定：--vz-font 用于官网与营销页展示（得意黑），--vz-font-ui 用于界面正文与组件（Inter 栈）。
+
+   主题：默认深色（VZ 紫品牌），[data-theme="light"] 切亮色（slate 中性盘，品牌仍是 VZ 紫）。
+   亮色取值按设计系统规范，页面底 #f8fafc、承载面 #ffffff、文字 #0f172a 起四档。 */
 
 @font-face {
   font-family: 'SmileySans';
@@ -22,15 +26,57 @@
   --vz-font-ui: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
   --vz-font-mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
 
-  /* 字号梯度，只允许用这八级 */
+  /* 基础色盘 violet，品牌紫阶，1 最浅 10 最深 */
+  --vz-palette-violet-1:  #f3e8ff;
+  --vz-palette-violet-2:  #e9d5ff;
+  --vz-palette-violet-3:  #d8b4fe;
+  --vz-palette-violet-4:  #c4b5fd;
+  --vz-palette-violet-5:  #a78bfa;
+  --vz-palette-violet-6:  #7c3aed;
+  --vz-palette-violet-7:  #6d28d9;
+  --vz-palette-violet-8:  #5b21b6;
+  --vz-palette-violet-9:  #4f46e5;
+  --vz-palette-violet-10: #2e1065;
+
+  /* 基础色盘 cyan，辅助色阶 */
+  --vz-palette-cyan-5: #38bdf8;
+  --vz-palette-cyan-6: #0ea5e9;
+
+  /* 基础色盘夜间灰，深色底用带冷蓝倾向的中性 */
+  --vz-palette-ink-950: #080b14;
+  --vz-palette-ink-900: #0d0f1a;
+  --vz-palette-ink-850: #11142a;
+  --vz-palette-ink-800: #141828;
+  --vz-palette-ink-700: #1a1f33;
+
+  /* 基础色盘 slate，亮色中性阶梯 */
+  --vz-palette-slate-50:  #f8fafc;
+  --vz-palette-slate-100: #f1f5f9;
+  --vz-palette-slate-200: #e2e8f0;
+  --vz-palette-slate-300: #cbd5e1;
+  --vz-palette-slate-400: #94a3b8;
+  --vz-palette-slate-600: #475569;
+  --vz-palette-slate-900: #0f172a;
+
+  /* 基础色盘状态色，亮色取规范值，深色取高亮值 */
+  --vz-palette-green-600:  #16a34a;
+  --vz-palette-green-500:  #10b981;
+  --vz-palette-orange-600: #ea580c;
+  --vz-palette-orange-400: #fb923c;
+  --vz-palette-red-600:    #dc2626;
+  --vz-palette-red-500:    #f43f5e;
+  --vz-palette-sky-600:    #0284c7;
+  --vz-palette-sky-400:    #38bdf8;
+
+  /* 字号梯度，只允许用这六级 */
   --vz-fs-12: 12px;
   --vz-fs-14: 14px;
   --vz-fs-16: 16px;
-  --vz-fs-20: 20px;
   --vz-fs-24: 24px;
   --vz-fs-30: 30px;
-  --vz-fs-38: 38px;
   --vz-fs-46: 46px;
+  /* 历史名保留，值并入 16 档，供存量引用不断链 */
+  --vz-fs-20: 16px;
 
   /* 字重，只允许用这四级 */
   --vz-fw-regular: 400;
@@ -38,14 +84,102 @@
   --vz-fw-semibold: 600;
   --vz-fw-bold: 700;
 
-  /* 背景与表面 */
-  --vz-bg: #080b14;
-  --vz-deep: #0d0f1a;
-  --vz-bg-modal: #11142a;
-  --vz-bg-surface: #141828;
-  --vz-bg-elevated: #1a1f33;
+  /* 字阶四档，页面标题 / 区块标题 / 正文 / 辅助说明。行高与字号成对，不单独取用 */
+  --vz-type-page-size: 20px;
+  --vz-type-page-line: 28px;
+  --vz-type-section-size: 16px;
+  --vz-type-section-line: 24px;
+  --vz-type-body-size: 14px;
+  --vz-type-body-line: 20px;
+  --vz-type-caption-size: 12px;
+  --vz-type-caption-line: 16px;
 
-  /* 玻璃层，白色透明，用于卡片与控件表面。数值即 alpha×100，越大越亮 */
+  /* 间距 4px 栅格，只允许这八级，禁 10 / 14 / 18 / 22 这类魔术数 */
+  --vz-space-1: 4px;
+  --vz-space-2: 8px;
+  --vz-space-3: 12px;
+  --vz-space-4: 16px;
+  --vz-space-5: 24px;
+  --vz-space-6: 32px;
+  --vz-space-7: 48px;
+  --vz-space-8: 64px;
+
+  /* 圆角阶梯，按组件语义分配，禁手写魔术值 */
+  --vz-radius-none: 0;
+  --vz-radius-xs: 2px;
+  --vz-radius-sm: 4px;
+  --vz-radius-md: 6px;
+  --vz-radius-input: 4px;
+  --vz-radius-lg: 8px;
+  --vz-radius: 12px;
+  --vz-radius-xl: 16px;
+  --vz-radius-2xl: 16px;
+  --vz-radius-toast: 6px;
+  --vz-radius-progress: 999px;
+  --vz-radius-tag: 999px;
+  --vz-radius-pill: 999px;
+
+  /* 控件尺寸，全部是 4 的倍数 */
+  --vz-control-h-sm: 28px;
+  --vz-control-h: 32px;
+  --vz-control-h-lg: 40px;
+  --vz-control-px: var(--vz-space-2);
+  --vz-icon-sm: 14px;
+  --vz-icon-md: 16px;
+  --vz-icon-lg: 20px;
+
+  /* 阴影四级，常规卡片不用阴影，只用 0.5px 描边切分，阴影留给离屏浮层 */
+  --vz-shadow-none: 0 0 #0000;
+  --vz-shadow-card: 0 1px 3px 0 rgba(15,23,42,0.04), 0 1px 2px -1px rgba(15,23,42,0.04);
+  --vz-shadow-popover: 0 4px 6px -1px rgba(15,23,42,0.06), 0 2px 4px -2px rgba(15,23,42,0.06);
+  --vz-shadow-dialog: 0 20px 25px -5px rgba(15,23,42,0.08), 0 8px 10px -6px rgba(15,23,42,0.08);
+  --vz-shadow-primary: 0 6px 16px rgba(124,58,237,0.20);
+  --vz-shadow-primary-hover: 0 10px 24px rgba(124,58,237,0.28);
+  --vz-shadow-success: 0 6px 16px rgba(16,185,129,0.20);
+  --vz-shadow-success-hover: 0 10px 24px rgba(16,185,129,0.28);
+  --vz-shadow-glow: 0 20px 60px rgba(88,60,250,0.08);
+  --vz-shadow-modal: var(--vz-shadow-dialog);
+  --vz-shadow-toast: var(--vz-shadow-popover);
+
+  /* 层级四层封顶，组件内不得出现更大数值 */
+  --vz-z-overlay: 1000;
+  --vz-z-drawer: 1001;
+  --vz-z-modal: 1010;
+  --vz-z-toast: 1100;
+
+  /* 过渡时长三档，组件内不写字面量 */
+  --vz-dur-fast: .15s;
+  --vz-dur: .25s;
+  --vz-dur-slow: .28s;
+
+  /* 焦点环，只给键盘，鼠标不打扰 */
+  --vz-focus-ring: 0 0 0 2px var(--vz-bg), 0 0 0 4px var(--vz-border-focus);
+  --vz-line: 1.7;
+
+  /* 行内图标对齐 x-height 的下移量 */
+  --vz-icon-shift: 0.125em;
+
+  /* 组件可变点，站点皮肤只改这几个，不覆写组件类 */
+  --vz-seg-on-bg: var(--vz-glass-12);
+  --vz-seg-on-color: var(--vz-text);
+  --vz-toast-offset: var(--vz-space-6);
+  --vz-modal-y: 15vh;
+}
+
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* 背景与承载面 */
+  --vz-bg: var(--vz-palette-ink-950);
+  --vz-deep: var(--vz-palette-ink-900);
+  --vz-bg-modal: var(--vz-palette-ink-850);
+  --vz-bg-surface: var(--vz-palette-ink-800);
+  --vz-bg-elevated: var(--vz-palette-ink-700);
+  --vz-bg-subtle: rgba(255,255,255,0.03);
+  --vz-bg-disabled: rgba(255,255,255,0.06);
+
+  /* 玻璃层，白色透明，数值即 alpha×100 */
   --vz-surface: rgba(255,255,255,0.02);
   --vz-glass-2: rgba(255,255,255,0.03);
   --vz-glass-3: rgba(255,255,255,0.04);
@@ -56,107 +190,168 @@
   --vz-surface-hover: rgba(255,255,255,0.04);
   --vz-surface-raised: rgba(255,255,255,0.08);
 
-  /* 边框 */
+  /* 边框，subtle 半透明微线，default 实色一档 */
   --vz-border-0: rgba(255,255,255,0.04);
-  --vz-border: rgba(255,255,255,0.10);
   --vz-border-1: rgba(255,255,255,0.06);
   --vz-border-2: rgba(255,255,255,0.08);
+  --vz-border: rgba(255,255,255,0.10);
   --vz-border-3: rgba(255,255,255,0.15);
-  --vz-border-hover: rgba(255,255,255,0.08);
-  --vz-border-focus: rgba(167,139,250,0.30);
+  --vz-border-hover: rgba(255,255,255,0.20);
+  --vz-border-focus: var(--vz-palette-violet-4);
+  --vz-hairline: rgba(255,255,255,0.08);
 
-  /* 文字，四级加纯白 */
+  /* 文字四级加纯白 */
   --vz-text: #eef2f8;
   --vz-text-secondary: rgba(255,255,255,0.62);
   --vz-text-tertiary: rgba(255,255,255,0.48);
   --vz-text-disabled: rgba(255,255,255,0.32);
-  --vz-white: #fff;
+  --vz-white: #ffffff;
 
-  /* 品牌渐变，紫到靛蓝 */
-  --vz-brand-from: #a78bfa;
-  --vz-brand-to: #38bdf8;
-  --vz-brand-accent: #a78bfa;
-  --vz-primary: #7c3aed;
-  --vz-primary-2: #6d28d9;
-  --vz-primary-gradient: linear-gradient(135deg, #7c3aed, #4f46e5);
-  --vz-primary-gradient-active: linear-gradient(135deg, #6d28d9, #4338ca);
+  /* 品牌 */
+  --vz-brand-from: var(--vz-palette-violet-5);
+  --vz-brand-to: var(--vz-palette-cyan-5);
+  --vz-brand-accent: var(--vz-palette-violet-5);
+  --vz-primary: var(--vz-palette-violet-6);
+  --vz-primary-2: var(--vz-palette-violet-7);
+  --vz-primary-hover: var(--vz-palette-violet-7);
+  --vz-primary-active: var(--vz-palette-violet-8);
+  --vz-primary-subtle: rgba(124,58,237,0.12);
+  --vz-primary-gradient: linear-gradient(135deg, var(--vz-palette-violet-6), var(--vz-palette-violet-9));
+  --vz-primary-gradient-active: linear-gradient(135deg, var(--vz-palette-violet-7), #4338ca);
+  --vz-brand-1:  var(--vz-palette-violet-1);
+  --vz-brand-2:  var(--vz-palette-violet-2);
+  --vz-brand-3:  var(--vz-palette-violet-3);
+  --vz-brand-4:  var(--vz-palette-violet-4);
+  --vz-brand-5:  var(--vz-palette-violet-5);
+  --vz-brand-6:  var(--vz-palette-violet-6);
+  --vz-brand-7:  var(--vz-palette-violet-7);
+  --vz-brand-8:  var(--vz-palette-violet-8);
+  --vz-brand-9:  var(--vz-palette-violet-9);
+  --vz-brand-10: var(--vz-palette-violet-10);
 
-  /* 品牌紫色阶，1 最浅 10 最深 */
-  --vz-brand-1:  #f3e8ff;
-  --vz-brand-2:  #e9d5ff;
-  --vz-brand-3:  #d8b4fe;
-  --vz-brand-4:  #c4b5fd;
-  --vz-brand-5:  #a78bfa;
-  --vz-brand-6:  #7c3aed;
-  --vz-brand-7:  #6d28d9;
-  --vz-brand-8:  #5b21b6;
-  --vz-brand-9:  #4f46e5;
-  --vz-brand-10: #2e1065;
-
-  /* 功能色 */
-  --vz-success: #10b981;
+  /* 状态色与浅底，深色下浅底走低透明 */
+  --vz-success: var(--vz-palette-green-500);
   --vz-success-2: #059669;
-  --vz-success-grad: linear-gradient(135deg, #10b981, #059669);
-  --vz-info: #38bdf8;
-  --vz-warning: #fb923c;
-  --vz-error: #f43f5e;
-  --vz-danger: #f43f5e;
+  --vz-success-bg: rgba(16,185,129,0.12);
+  --vz-success-border: rgba(16,185,129,0.24);
+  --vz-warning: var(--vz-palette-orange-400);
+  --vz-warning-bg: rgba(251,146,60,0.12);
+  --vz-warning-border: rgba(251,146,60,0.24);
+  --vz-danger: var(--vz-palette-red-500);
   --vz-danger-2: #e11d48;
+  --vz-danger-bg: rgba(244,63,94,0.12);
+  --vz-danger-border: rgba(244,63,94,0.24);
+  --vz-info: var(--vz-palette-sky-400);
+  --vz-info-bg: rgba(56,189,248,0.12);
+  --vz-info-border: rgba(56,189,248,0.24);
+  --vz-error: var(--vz-danger);
+  --vz-success-grad: linear-gradient(135deg, var(--vz-palette-green-500), #059669);
 
-  /* 标签类别色 */
-  --vz-tag-purple: #a78bfa;
-  --vz-tag-blue: #38bdf8;
+  /* 标签类别色，只做分类标记，不承担状态语义 */
+  --vz-tag-purple: var(--vz-palette-violet-5);
+  --vz-tag-blue: var(--vz-palette-cyan-5);
   --vz-tag-green: #34d399;
   --vz-tag-pink: #f472b6;
-  --vz-tag-orange: #fb923c;
+  --vz-tag-orange: var(--vz-palette-orange-400);
 
-  /* 间距，4px 基准，只允许这六级 */
-  --vz-space-1: 4px;
-  --vz-space-2: 8px;
-  --vz-space-3: 12px;
-  --vz-space-4: 16px;
-  --vz-space-5: 24px;
-  --vz-space-6: 32px;
+  /* 遮罩与浮层表面 */
+  --vz-scrim: rgba(8,11,20,0.66);
+  --vz-popover-bg: var(--vz-palette-ink-700);
+  --vz-drawer-bg: var(--vz-deep);
+}
 
-  /* 圆角，按组件语义分配，不按数值命名新项 */
-  --vz-radius-progress: 10px;
-  --vz-radius-sm: 12px;
-  --vz-radius-input: 14px;
-  --vz-radius-toast: 16px;
-  --vz-radius: 20px;
-  --vz-radius-lg: 24px;
-  --vz-radius-xl: 32px;
-  --vz-radius-tag: 40px;
-  --vz-radius-pill: 60px;
+:root[data-theme="light"] {
+  color-scheme: light;
 
-  /* 阴影与光晕 */
-  --vz-shadow-card: 0 20px 60px rgba(0,0,0,0.30);
-  --vz-shadow-glow: 0 20px 60px rgba(88,60,250,0.08);
-  --vz-shadow-primary: 0 8px 24px rgba(124,58,237,0.20);
-  --vz-shadow-primary-hover: 0 12px 32px rgba(124,58,237,0.30);
-  --vz-shadow-success: 0 8px 24px rgba(16,185,129,0.20);
-  --vz-shadow-success-hover: 0 12px 32px rgba(16,185,129,0.30);
-  --vz-shadow-modal: 0 40px 80px rgba(0,0,0,0.60);
-  --vz-shadow-toast: 0 12px 40px rgba(0,0,0,0.40);
+  --vz-bg: var(--vz-palette-slate-50);
+  --vz-deep: var(--vz-palette-slate-100);
+  --vz-bg-modal: #ffffff;
+  --vz-bg-surface: #ffffff;
+  --vz-bg-elevated: #ffffff;
+  --vz-bg-subtle: var(--vz-palette-slate-100);
+  --vz-bg-disabled: var(--vz-palette-slate-200);
 
-  /* 层级，四层封顶，组件内不得出现更大数值 */
-  --vz-z-overlay: 1000;
-  --vz-z-drawer: 1001;
-  --vz-z-modal: 1010;
-  --vz-z-toast: 1100;
+  --vz-surface: #ffffff;
+  --vz-glass-2: var(--vz-palette-slate-100);
+  --vz-glass-3: var(--vz-palette-slate-100);
+  --vz-glass-4: var(--vz-palette-slate-100);
+  --vz-glass-8: var(--vz-palette-slate-200);
+  --vz-glass-12: var(--vz-palette-slate-200);
+  --vz-glass-15: var(--vz-palette-slate-300);
+  --vz-surface-hover: var(--vz-palette-slate-100);
+  --vz-surface-raised: #ffffff;
 
-  /* 过渡时长，组件内用这三档，不写字面量 */
-  --vz-dur-fast: .15s;
-  --vz-dur: .25s;
-  --vz-dur-slow: .28s;
+  --vz-border-0: rgba(226,232,240,0.7);
+  --vz-border-1: rgba(226,232,240,0.8);
+  --vz-border-2: var(--vz-palette-slate-200);
+  --vz-border: var(--vz-palette-slate-200);
+  --vz-border-3: var(--vz-palette-slate-300);
+  --vz-border-hover: var(--vz-palette-slate-400);
+  --vz-border-focus: var(--vz-primary);
+  --vz-hairline: rgba(226,232,240,0.8);
 
-  /* 组件可变点：站点皮肤只改这几个，不用覆写组件类 */
-  --vz-seg-on-bg: var(--vz-glass-12);
-  --vz-seg-on-color: var(--vz-text);
-  /* 轻提示离页面上下边的距离。站点有吸顶页眉时调大它，默认值会被页眉压住 */
-  --vz-toast-offset: var(--vz-space-6);
+  --vz-text: var(--vz-palette-slate-900);
+  --vz-text-secondary: var(--vz-palette-slate-600);
+  --vz-text-tertiary: var(--vz-palette-slate-400);
+  --vz-text-disabled: var(--vz-palette-slate-300);
+  --vz-white: #ffffff;
 
-  /* 焦点环与行高 */
-  --vz-focus-ring: 0 0 0 2px #080b14, 0 0 0 4px #c4b5fd;
-  --vz-line: 1.7;
+  --vz-brand-from: var(--vz-palette-violet-7);
+  --vz-brand-to: var(--vz-palette-violet-6);
+  --vz-brand-accent: var(--vz-palette-violet-7);
+  --vz-primary: var(--vz-palette-violet-7);
+  --vz-primary-2: var(--vz-palette-violet-8);
+  --vz-primary-hover: var(--vz-palette-violet-8);
+  --vz-primary-active: var(--vz-palette-violet-10);
+  --vz-primary-subtle: #f5f3ff;
+  --vz-primary-gradient: linear-gradient(135deg, var(--vz-palette-violet-7), var(--vz-palette-violet-9));
+  --vz-primary-gradient-active: linear-gradient(135deg, var(--vz-palette-violet-8), #4338ca);
+
+  --vz-success: var(--vz-palette-green-600);
+  --vz-success-2: #15803d;
+  --vz-success-bg: #f0fdf4;
+  --vz-success-border: #dcfce7;
+  --vz-warning: var(--vz-palette-orange-600);
+  --vz-warning-bg: #fff7ed;
+  --vz-warning-border: #ffedd5;
+  --vz-danger: var(--vz-palette-red-600);
+  --vz-danger-2: #b91c1c;
+  --vz-danger-bg: #fef2f2;
+  --vz-danger-border: #fee2e2;
+  --vz-info: var(--vz-palette-sky-600);
+  --vz-info-bg: #f0f9ff;
+  --vz-info-border: #e0f2fe;
+  --vz-error: var(--vz-danger);
+
+  --vz-tag-purple: var(--vz-palette-violet-7);
+  --vz-tag-blue: var(--vz-palette-sky-600);
+  --vz-tag-green: var(--vz-palette-green-600);
+  --vz-tag-pink: #db2777;
+  --vz-tag-orange: var(--vz-palette-orange-600);
+
+  --vz-scrim: rgba(15,23,42,0.42);
+  --vz-popover-bg: #ffffff;
+  --vz-drawer-bg: #ffffff;
+  --vz-shadow-glow: 0 20px 60px rgba(15,23,42,0.06);
+}
+
+/* 页面没锁主题时跟随系统亮色偏好 */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --vz-bg: var(--vz-palette-slate-50);
+    --vz-bg-surface: #ffffff;
+    --vz-bg-modal: #ffffff;
+    --vz-bg-elevated: #ffffff;
+    --vz-text: var(--vz-palette-slate-900);
+    --vz-text-secondary: var(--vz-palette-slate-600);
+    --vz-text-tertiary: var(--vz-palette-slate-400);
+    --vz-text-disabled: var(--vz-palette-slate-300);
+    --vz-border: var(--vz-palette-slate-200);
+    --vz-border-1: rgba(226,232,240,0.8);
+    --vz-border-hover: var(--vz-palette-slate-400);
+    --vz-hairline: rgba(226,232,240,0.8);
+    --vz-surface: #ffffff;
+    --vz-surface-hover: var(--vz-palette-slate-100);
+  }
 }

@@ -1,0 +1,282 @@
+/* 浮层与反馈：Modal、Drawer、Popconfirm、Alert 横幅、Tooltip 修正
+
+   选型口径（别凭手感挑）：
+   高危不可逆，影响大用 Modal，影响小用 Popconfirm；
+   高频轻量原地单项确认用 Popconfirm，禁用于大额资金、批量删除、权限重置；
+   信息录入按体量：短小聚焦 Modal，需保留列表上下文 Drawer，深层长表单或多步骤独立 Page。
+   尺寸：Modal 小 400 / 中 520 / 大 720 到 800；Drawer 窄 400 / 中 600 / 宽 800。
+   落点：垂直落在视口 15vh 起（黄金分割下缘），禁止垂直正中，正中有下坠错觉。
+   遮罩：录入与高危弹窗一律不响应点遮罩关闭，防手滑丢内容；只有纯查看层允许。 */
+
+.vz-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--vz-z-modal);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--vz-modal-y) var(--vz-space-4) var(--vz-space-6);
+  background: var(--vz-scrim);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--vz-dur-slow) ease, visibility 0s linear var(--vz-dur-slow);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.vz-modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity var(--vz-dur-slow) ease, visibility 0s linear 0s;
+}
+
+.vz-modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - var(--vz-modal-y) - var(--vz-space-6));
+  display: flex;
+  flex-direction: column;
+  background: var(--vz-bg-modal);
+  border: 1px solid var(--vz-border-1);
+  border-radius: var(--vz-radius-xl);
+  box-shadow: var(--vz-shadow-dialog);
+  transform: scale(.96);
+  transition: transform var(--vz-dur-slow) cubic-bezier(.34,1.56,.64,1);
+  /* 弹窗本体滚动时不要把外层的遮罩一起带着滚 */
+  overflow: hidden;
+}
+.vz-modal-overlay.show .vz-modal { transform: scale(1); }
+
+.vz-modal-sm { max-width: 400px; }
+.vz-modal-md { max-width: 520px; }
+.vz-modal-lg { max-width: 720px; }
+.vz-modal-xl { max-width: 800px; }
+
+.vz-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--vz-space-3);
+  padding: var(--vz-space-5) var(--vz-space-5) var(--vz-space-3);
+}
+.vz-modal-title {
+  font-size: var(--vz-type-section-size);
+  line-height: var(--vz-type-section-line);
+  font-weight: var(--vz-fw-semibold);
+  color: var(--vz-text);
+  text-wrap: balance;
+}
+.vz-modal-sub {
+  margin-top: var(--vz-space-1);
+  font-size: var(--vz-type-caption-size);
+  line-height: var(--vz-type-caption-line);
+  color: var(--vz-text-tertiary);
+}
+.vz-modal-close {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: -2px -2px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--vz-radius-sm);
+  background: transparent;
+  color: var(--vz-text-tertiary);
+  cursor: pointer;
+  transition: color var(--vz-dur-fast), background-color var(--vz-dur-fast);
+}
+.vz-modal-close:hover { color: var(--vz-text); background: var(--vz-surface-hover); }
+.vz-modal-close:disabled { color: var(--vz-text-disabled); cursor: not-allowed; background: transparent; }
+
+/* 主体自己滚，头尾固定，加载前后高度不跳 */
+.vz-modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 var(--vz-space-5) var(--vz-space-4);
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-line);
+  color: var(--vz-text-secondary);
+}
+.vz-modal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--vz-space-2);
+  padding: var(--vz-space-3) var(--vz-space-5) var(--vz-space-5);
+  border-top: 1px solid var(--vz-hairline);
+  background: var(--vz-bg-modal);
+}
+.vz-modal-foot .vz-modal-foot-extra { margin-right: auto; }
+
+/* 提交中：主按钮转圈并锁死，取消与关闭一起禁用，防重复提交与重复扣费 */
+.vz-modal.is-loading .vz-modal-foot .vz-btn,
+.vz-modal.is-loading .vz-modal-close { pointer-events: none; opacity: .6; }
+.vz-modal.is-loading { cursor: progress; }
+
+/* 危险操作弹窗：主按钮标红，禁用默认聚焦防回车误触 */
+.vz-modal.is-danger .vz-modal-foot .vz-btn-primary {
+  background: var(--vz-danger);
+  box-shadow: none;
+}
+.vz-modal.is-danger .vz-modal-foot .vz-btn-primary:hover { background: var(--vz-danger-2); }
+
+/* 纯查看类浮层才允许点遮罩关闭，用属性显式声明，默认不放行 */
+.vz-modal-overlay[data-mask-closable="true"] { cursor: pointer; }
+.vz-modal-overlay[data-mask-closable="true"] .vz-modal { cursor: default; }
+
+/* 抽屉：保留列表上下文的详情、多字段轻编辑、复杂筛选 */
+.vz-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--vz-z-drawer);
+  background: var(--vz-scrim);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--vz-dur-slow) ease, visibility 0s linear var(--vz-dur-slow);
+}
+.vz-drawer-overlay.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity var(--vz-dur-slow) ease, visibility 0s linear 0s;
+}
+.vz-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: var(--vz-z-drawer);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--vz-drawer-bg);
+  border-left: 1px solid var(--vz-border-1);
+  box-shadow: var(--vz-shadow-dialog);
+  transform: translateX(100%);
+  transition: transform var(--vz-dur-slow) cubic-bezier(.22,1,.36,1);
+}
+.vz-drawer.show { transform: translateX(0); }
+.vz-drawer-md { max-width: 600px; }
+.vz-drawer-lg { max-width: 800px; }
+.vz-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vz-space-3);
+  padding: var(--vz-space-4) var(--vz-space-5);
+  border-bottom: 1px solid var(--vz-hairline);
+}
+.vz-drawer-body { flex: 1; min-height: 0; overflow-y: auto; padding: var(--vz-space-4) var(--vz-space-5); }
+.vz-drawer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--vz-space-2);
+  padding: var(--vz-space-3) var(--vz-space-5);
+  border-top: 1px solid var(--vz-hairline);
+}
+
+/* 气泡确认：高频轻量原地单项确认，贴在按钮旁，鼠标不用挪 */
+.vz-popconfirm {
+  position: absolute;
+  z-index: var(--vz-z-toast);
+  width: max-content;
+  max-width: 280px;
+  padding: var(--vz-space-3);
+  border: 1px solid var(--vz-border-1);
+  border-radius: var(--vz-radius-md);
+  background: var(--vz-popover-bg);
+  box-shadow: var(--vz-shadow-popover);
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-type-body-line);
+  color: var(--vz-text);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(calc(var(--vz-space-1) * -1));
+  transition: opacity var(--vz-dur-fast) ease, transform var(--vz-dur-fast) ease, visibility 0s linear var(--vz-dur-fast);
+}
+.vz-popconfirm.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity var(--vz-dur-fast) ease, transform var(--vz-dur-fast) ease, visibility 0s linear 0s;
+}
+.vz-popconfirm-msg { margin-bottom: var(--vz-space-2); }
+.vz-popconfirm-actions { display: flex; justify-content: flex-end; gap: var(--vz-space-2); }
+
+/* 顶部横幅：要持续可见又不该阻断操作时用它，别用 Modal 抢焦点 */
+.vz-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--vz-space-2);
+  padding: var(--vz-space-3) var(--vz-space-4);
+  border: 1px solid var(--vz-border-1);
+  border-radius: var(--vz-radius-md);
+  background: var(--vz-bg-subtle);
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-type-body-line);
+  color: var(--vz-text-secondary);
+}
+.vz-alert-ico { flex: none; display: inline-flex; margin-top: 2px; }
+.vz-alert-body { flex: 1; min-width: 0; }
+.vz-alert-title { font-weight: var(--vz-fw-medium); color: var(--vz-text); }
+.vz-alert-info    { background: var(--vz-info-bg);    border-color: var(--vz-info-border);    color: var(--vz-info); }
+.vz-alert-success { background: var(--vz-success-bg); border-color: var(--vz-success-border); color: var(--vz-success); }
+.vz-alert-warning { background: var(--vz-warning-bg); border-color: var(--vz-warning-border); color: var(--vz-warning); }
+.vz-alert-danger  { background: var(--vz-danger-bg);  border-color: var(--vz-danger-border);  color: var(--vz-danger); }
+.vz-alert .vz-alert-body,
+.vz-alert .vz-alert-title { color: inherit; }
+.vz-alert-desc { color: var(--vz-text-secondary); }
+
+/* 悬停提示：只放补充说明，关键信息不许只藏在这里 */
+.vz-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+.vz-tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + var(--vz-space-2));
+  z-index: var(--vz-z-toast);
+  padding: var(--vz-space-1) var(--vz-space-2);
+  border: 1px solid var(--vz-border-1);
+  border-radius: var(--vz-radius-sm);
+  background: var(--vz-popover-bg);
+  box-shadow: var(--vz-shadow-popover);
+  color: var(--vz-text);
+  font-size: var(--vz-type-caption-size);
+  line-height: var(--vz-type-caption-line);
+  white-space: nowrap;
+  transform: translateX(-50%) translateY(var(--vz-space-1));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--vz-dur-fast) ease, transform var(--vz-dur-fast) ease, visibility 0s linear var(--vz-dur-fast);
+}
+.vz-tooltip:hover::after,
+.vz-tooltip:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  transition: opacity var(--vz-dur-fast) ease, transform var(--vz-dur-fast) ease, visibility 0s linear 0s;
+}
+
+/* 移动端：弹窗贴底成 Sheet，高度三档由内容决定，顶部留 20% 防误触状态栏 */
+@media (max-width: 640px) {
+  .vz-modal-overlay { padding: var(--vz-space-6) var(--vz-space-3) var(--vz-space-3); align-items: flex-end; }
+  .vz-modal { max-width: none; max-height: 80vh; }
+  .vz-drawer { max-width: none; }
+}

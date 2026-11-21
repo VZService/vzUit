@@ -10,10 +10,10 @@ VZService 全站共用的样式、图标与代码规范。一份源文件，多�
 |---|---|
 | `src/tokens.css` | 设计变量与字体，纯 token，无组件 |
 | `src/vzuit.css` | 完整组件样式，用 `@import` 引 tokens.css 与 components/ |
-| `src/components/` | 可单独引用的组件，文件名即组件名，全部 `vz-` 前缀（seg / switch / range / toast） |
+| `src/components/` | 可单独引用的组件，文件名即组件名，全部 `vz-` 前缀（button / controls / data / feedback / seg / switch / range / toast） |
 | `src/vzuit-core.js` | UI 运行时 core 段，弹窗、轻提示、加载圈、滑块、转义、轻量 Markdown、页眉页脚外壳，只依赖 DOM |
 | `public/starter.html` | 接入样板，新站照这份抄引用顺序与控件结构 |
-| `specs/` | 五份规范，见下方索引 |
+| `specs/` | 六份规范，见下方索引 |
 | `configs/` | editorconfig 与 biome 配置，各站直接拷 |
 | `tools/build-icons.mjs` | 图标集合成 sprite |
 | `tools/stamp.mjs` | 内容哈希版本戳注入 |
@@ -80,6 +80,7 @@ VZService 全站共用的样式、图标与代码规范。一份源文件，多�
 | `specs/03-icon.md` | 图标双轨制、sprite 引用、尺寸与着色 |
 | `specs/04-code-style.md` | 命名、文件结构、版本戳、脚本分层、提交信息 |
 | `specs/05-adopt.md` | 哪些站接哪些不接、单站接入清单、委托方项目改动约定、浅色皮肤 |
+| `specs/06-design-system.md` | 六步工作流、控件选型表、按钮六态、徽标语义、浮层取舍、二十五项交付门禁 |
 
 ## 校验
 
