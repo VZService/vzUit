@@ -3,6 +3,8 @@
         ghost 表格行内动作；danger 危险动作必配二次确认；link 仅带跳转语义。
    六态：default / hover / active（下沉 1px）/ disabled / loading（锁死防重复提交）/ focus-visible。
    hover 服务鼠标，focus 服务键盘，两套都要有，不能互相顶替。
+   文档页与截图比对可以用 data-vz-state="hover|active|focus|disabled" 把中间态定住，
+   只在演示与视觉回归里用，业务代码不加这个属性。
    宽度不许写死：min-width 80px 配 padding，短词膨胀时才不会撑破（出海语言长 2 到 3 倍）。 */
 
 .vz-btn,
@@ -58,12 +60,14 @@
   border-color: transparent;
 }
 .vz-btn-primary:hover,
+.vz-btn-primary[data-vz-state="hover"],
 .btn-primary:hover,
 .btn-login:hover {
   background: var(--vz-primary-hover);
   box-shadow: var(--vz-shadow-primary);
 }
 .vz-btn-primary:active,
+.vz-btn-primary[data-vz-state="active"],
 .btn-primary:active,
 .btn-login:active { background: var(--vz-primary-active); box-shadow: none; transform: translateY(1px); }
 
@@ -75,11 +79,13 @@
   color: var(--vz-text);
 }
 .vz-btn-secondary:hover,
+.vz-btn-secondary[data-vz-state="hover"],
 .btn-secondary:hover {
   background: var(--vz-surface-hover);
   border-color: var(--vz-border-3);
 }
 .vz-btn-secondary:active,
+.vz-btn-secondary[data-vz-state="active"],
 .btn-secondary:active { transform: translateY(1px); }
 
 /* 幽灵按钮：表格行内与工具条，省横向空间 */
@@ -92,8 +98,10 @@
   color: var(--vz-text-secondary);
 }
 .vz-btn-ghost:hover,
+.vz-btn-ghost[data-vz-state="hover"],
 .btn-edit:hover { background: var(--vz-surface-hover); color: var(--vz-text); }
 .vz-btn-ghost:active,
+.vz-btn-ghost[data-vz-state="active"],
 .btn-edit:active { transform: translateY(1px); }
 
 /* 危险按钮：醒目标红，不许拿主按钮硬改色，必须配二次确认或可撤销 */
@@ -105,9 +113,11 @@
   border-color: transparent;
 }
 .vz-btn-danger:hover,
+.vz-btn-danger[data-vz-state="hover"],
 .btn-danger:hover,
 .btn-delete:hover { background: var(--vz-danger-2); }
 .vz-btn-danger:active,
+.vz-btn-danger[data-vz-state="active"],
 .btn-danger:active,
 .btn-delete:active { transform: translateY(1px); }
 /* 行内删除动作走幽灵红，不铺整块红底 */
@@ -135,6 +145,7 @@
 /* 禁用：置灰但仍可读，光标明示不可点 */
 .vz-btn:disabled,
 .vz-btn[aria-disabled="true"],
+.vz-btn[data-vz-state="disabled"],
 .vz-btn.is-disabled,
 .btn-primary:disabled,
 .btn-secondary:disabled,
@@ -171,6 +182,7 @@
 
 /* 焦点环只给键盘，鼠标点完不留框 */
 .vz-btn:focus-visible,
+.vz-btn[data-vz-state="focus"],
 .btn-primary:focus-visible,
 .btn-secondary:focus-visible,
 .btn-danger:focus-visible,

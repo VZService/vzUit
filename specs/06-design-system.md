@@ -80,6 +80,9 @@
 
 宽度不许写死，`min-width: 80px` 配左右 padding，出海语言长两三倍时不撑破。
 
+文档页与视觉回归要一次看全六态时，用 `data-vz-state="hover|active|focus|disabled"` 把中间态定住，
+样式与真实交互态出自同一条规则，不会两套写法漂移。业务代码不加这个属性。
+
 ## 徽标与标签
 
 徽标只表系统客观状态，六种语义固定：success 完成、warning 待办审批、danger 真实阻断、
