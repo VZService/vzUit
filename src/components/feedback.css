@@ -291,9 +291,40 @@
   transition: opacity var(--vz-dur-fast) ease, transform var(--vz-dur-fast) ease, visibility 0s linear 0s;
 }
 
-/* 移动端：弹窗贴底成 Sheet，高度三档由内容决定，顶部留 20% 防误触状态栏 */
+/* 移动端：弹窗与抽屉都改成贴底 Sheet。
+   窄屏右侧抽屉只有一窄条，手指够不到，也看不出层级，所以抽屉在手机上走底部滑出：
+   全宽、顶部两角圆、高度按内容自适应，最高 80vh，底部留安全区。
+   拖动条只是视觉提示，告诉人「这块可以关」，真正的关闭还是按钮与遮罩。 */
 @media (max-width: 640px) {
   .vz-modal-overlay { padding: var(--vz-space-6) var(--vz-space-3) var(--vz-space-3); align-items: flex-end; }
   .vz-modal { max-width: none; max-height: 80vh; }
-  .vz-drawer { max-width: none; }
+  .vz-drawer {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: none;
+    width: 100%;
+    height: auto;
+    max-height: 80vh;
+    max-height: 80dvh;
+    border-left: 0;
+    border-top: 1px solid var(--vz-border-1);
+    border-radius: var(--vz-radius-xl) var(--vz-radius-xl) 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    transform: translateY(100%);
+  }
+  .vz-drawer.show { transform: translateY(0); }
+  .vz-drawer-head { position: relative; padding-top: var(--vz-space-5); }
+  .vz-drawer-head::before {
+    content: "";
+    position: absolute;
+    top: var(--vz-space-2);
+    left: 50%;
+    width: 32px;
+    height: 4px;
+    transform: translateX(-50%);
+    border-radius: var(--vz-radius-pill);
+    background: var(--vz-border-3);
+  }
 }
