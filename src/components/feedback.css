@@ -127,6 +127,23 @@
 }
 .vz-modal.is-danger .vz-modal-foot .vz-btn-primary:hover { background: var(--vz-danger-2); }
 
+/* 危险层拒绝手滑：点遮罩或按 Esc 都不关，只把窗口左右抖一下，告诉人「这一步退不出去」。
+   JS 负责加 .is-shake，动画播完摘掉；遮罩上的 data-strict="true" 同时把光标从 pointer 改回默认，
+   否则用户会以为能点关闭。 */
+.vz-modal-overlay[data-strict="true"] { cursor: default; }
+@keyframes vz-modal-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px); }
+  30% { transform: translateX(7px); }
+  45% { transform: translateX(-5px); }
+  60% { transform: translateX(4px); }
+  75% { transform: translateX(-2px); }
+}
+.vz-modal.is-shake { animation: vz-modal-shake .42s cubic-bezier(.36,.07,.19,.97); }
+@media (prefers-reduced-motion: reduce) {
+  .vz-modal.is-shake { animation-duration: .01ms; }
+}
+
 /* 纯查看类浮层才允许点遮罩关闭，用属性显式声明，默认不放行 */
 .vz-modal-overlay[data-mask-closable="true"] { cursor: pointer; }
 .vz-modal-overlay[data-mask-closable="true"] .vz-modal { cursor: default; }

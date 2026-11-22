@@ -687,7 +687,7 @@
             <span class="vz-label-top">对局音量</span>
             <div class="vz-range">
               <div class="vz-range-head"><span>音量</span><b class="vz-range-val">60<small>%</small></b></div>
-              <input type="range" min="0" max="100" value="60" style="--vz-range-p:60%" aria-label="对局音量">
+              <input type="range" min="0" max="100" value="60" aria-label="对局音量">
             </div>
           </div>
           <label class="vz-field">
@@ -707,7 +707,7 @@
           <table class="vz-table">
             <thead>
               <tr>
-                <th class="is-check"><input type="checkbox" class="vz-checkbox" aria-label="全选"></th>
+                <th class="is-check"><input type="checkbox" class="vz-checkbox" data-vz-check-all aria-label="全选"></th>
                 <th>选手</th>
                 <th class="is-num">积分</th>
                 <th class="is-num">胜率</th>
@@ -717,7 +717,7 @@
             </thead>
             <tbody>
               <tr>
-                <td class="is-check"><input type="checkbox" class="vz-checkbox" aria-label="选择示例选手一"></td>
+                <td class="is-check"><input type="checkbox" class="vz-checkbox" data-vz-row-check aria-label="选择示例选手一"></td>
                 <td class="is-key">示例选手一</td>
                 <td class="is-num">1,284</td>
                 <td class="is-num">63.5%</td>
@@ -725,7 +725,7 @@
                 <td class="is-actions"><button class="vz-btn vz-btn-ghost">详情</button></td>
               </tr>
               <tr>
-                <td class="is-check"><input type="checkbox" class="vz-checkbox" aria-label="选择示例选手二"></td>
+                <td class="is-check"><input type="checkbox" class="vz-checkbox" data-vz-row-check aria-label="选择示例选手二"></td>
                 <td class="is-key">示例选手二</td>
                 <td class="is-num">1,102</td>
                 <td class="is-num">58.1%</td>
@@ -885,7 +885,7 @@
           '<div class="vz-modal-foot"><button class="vz-btn vz-btn-secondary" data-demo-close>取消</button>' +
           '<button class="vz-btn vz-btn-primary">重置密码</button></div>' +
         '</div></div>' +
-        '<div class="vz-modal-overlay" id="demoConfirm"><div class="vz-modal vz-modal-sm is-danger">' +
+        '<div class="vz-modal-overlay" id="demoConfirm" data-strict="true"><div class="vz-modal vz-modal-sm is-danger">' +
           '<div class="vz-modal-head"><div class="vz-modal-title">确定解散技术研发部群组？</div></div>' +
           '<div class="vz-modal-body">该群组下的 3 个赛季记录与 18 条对局流水会一起删除，删完找不回来。</div>' +
           '<div class="vz-modal-foot"><button class="vz-btn vz-btn-secondary" data-demo-close>先留着</button>' +
@@ -911,16 +911,47 @@
           if (el) el.classList.add('show');
         });
       });
+      /* 危险层（data-strict）点遮罩不关，抖一下告诉人退不出去；Esc 同理 */
+      function shake(el) {
+        var box = el.querySelector('.vz-modal');
+        if (!box) return;
+        box.classList.remove('is-shake');
+        void box.offsetWidth;
+        box.classList.add('is-shake');
+        setTimeout(function () { box.classList.remove('is-shake'); }, 460);
+      }
+      function closeOrShake(el) {
+        if (el.getAttribute('data-strict') === 'true') { shake(el); return; }
+        el.classList.remove('show');
+      }
       layer.addEventListener('click', function (e) {
-        if (e.target.hasAttribute('data-demo-close') || e.target.classList.contains('vz-modal-overlay') || e.target.classList.contains('vz-drawer-overlay')) {
-          var t = e.target.closest('.vz-modal-overlay, .vz-drawer-overlay');
-          if (t) t.classList.remove('show');
-        }
+        var target = e.target.closest('.vz-modal-overlay, .vz-drawer-overlay');
+        if (!target) return;
+        if (e.target.hasAttribute('data-demo-close')) { target.classList.remove('show'); return; }
+        if (e.target === target) closeOrShake(target);
       });
       document.addEventListener('keydown', function (e) {
         if (e.key !== 'Escape') return;
-        layer.querySelectorAll('.show').forEach(function (el) { el.classList.remove('show'); });
+        var open = layer.querySelectorAll('.show');
+        for (var i = 0; i < open.length; i++) closeOrShake(open[i]);
       });
+
+      /* 全选：半选显示横杠，点一次真能全选中，行勾选反向同步表头 */
+      var all = document.querySelector('[data-vz-check-all]');
+      var rows = [].slice.call(document.querySelectorAll('[data-vz-row-check]'));
+      if (all && rows.length) {
+        function syncHead() {
+          var on = rows.filter(function (r) { return r.checked; }).length;
+          all.checked = on === rows.length;
+          all.indeterminate = on > 0 && on < rows.length;
+        }
+        all.addEventListener('change', function () {
+          for (var i = 0; i < rows.length; i++) rows[i].checked = all.checked;
+          syncHead();
+        });
+        rows.forEach(function (r) { r.addEventListener('change', syncHead); });
+        syncHead();
+      }
     })();
   </script>
 </body>
