@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>圆角选型 · 5 个方案</title>
+<link rel="stylesheet" href="src/vzuit.css">
+<style>
+  /* 选型页自己的排版，不进规范层 */
+  body { background: var(--vz-bg); padding: var(--vz-space-6) var(--vz-space-4) var(--vz-space-8); }
+  .wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--vz-space-6); }
+  .top h1 { font-size: var(--vz-type-page-size); line-height: var(--vz-type-page-line); font-weight: var(--vz-fw-semibold); color: var(--vz-text); }
+  .top p { margin-top: var(--vz-space-2); font-size: var(--vz-type-body-size); line-height: var(--vz-line); color: var(--vz-text-secondary); }
+  .opt { border: 1px solid var(--vz-hairline); border-radius: var(--vz-radius); padding: var(--vz-space-5); background: var(--vz-bg-surface); }
+  .opt-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--vz-space-3); flex-wrap: wrap; margin-bottom: var(--vz-space-3); }
+  .opt-no { font-size: var(--vz-type-page-size); line-height: var(--vz-type-page-line); font-weight: var(--vz-fw-semibold); color: var(--vz-brand-from); font-variant-numeric: tabular-nums; }
+  .opt-name { font-size: var(--vz-type-section-size); font-weight: var(--vz-fw-medium); color: var(--vz-text); }
+  .kv { display: flex; flex-wrap: wrap; gap: var(--vz-space-2); margin-bottom: var(--vz-space-4); }
+  .kv span { font-size: var(--vz-type-caption-size); color: var(--vz-text-tertiary); font-variant-numeric: tabular-nums; border: 1px solid var(--vz-border-1); border-radius: var(--vz-radius-xs); padding: 2px var(--vz-space-2); }
+  .demo { display: flex; flex-direction: column; gap: var(--vz-space-3); }
+  .line { display: flex; align-items: center; gap: var(--vz-space-2); flex-wrap: wrap; }
+  .line .vz-input, .line .vz-selectbox, .line .vz-select-trigger { width: auto; min-width: 160px; }
+  .mini { border: 1px dashed var(--vz-border-2); border-radius: var(--vz-radius); padding: var(--vz-space-3); }
+  .mini .vz-modal { position: static; max-width: 100%; transform: none; box-shadow: none; max-height: none; }
+  .mini .vz-modal-body { padding-bottom: var(--vz-space-3); }
+  /* 每组的圆角变量只作用在自己的区块里 */
+  .r1 { --vz-radius-sm: 8px; --vz-radius-input: 8px; --vz-radius: 16px; --vz-radius-lg: 10px; --vz-radius-xl: 20px; --vz-radius-xs: 4px; }
+  .r2 { --vz-radius-sm: 10px; --vz-radius-input: 10px; --vz-radius: 18px; --vz-radius-lg: 12px; --vz-radius-xl: 24px; --vz-radius-xs: 6px; }
+  .r3 { --vz-radius-sm: 12px; --vz-radius-input: 12px; --vz-radius: 20px; --vz-radius-lg: 14px; --vz-radius-xl: 28px; --vz-radius-xs: 8px; }
+  .r4 { --vz-radius-sm: 14px; --vz-radius-input: 14px; --vz-radius: 24px; --vz-radius-lg: 16px; --vz-radius-xl: 32px; --vz-radius-xs: 12px; }
+  .r5 { --vz-radius-sm: 16px; --vz-radius-input: 16px; --vz-radius: 28px; --vz-radius-lg: 20px; --vz-radius-xl: 36px; --vz-radius-xs: 999px; --vz-radius-tag: 999px; }
+  .r5 .vz-badge { border-radius: var(--vz-radius-pill); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="top">
+    <h1>圆角选型 · 5 个方案</h1>
+    <p>现在这套是输入 4、卡片 12、浮层 16、徽标 4，按钮已经是胶囊。下面 5 组都比现在圆，越往后越圆。挑一个号告诉小V，我把基座变量改成那一组。</p>
+  </section>
+
+  <section class="opt r1">
+    <div class="opt-head"><span class="opt-no">01</span><span class="opt-name">轻圆一档</span></div>
+    <div class="kv"><span>输入 8</span><span>卡片 16</span><span>浮层 20</span><span>徽标 4</span><span>按钮 999</span></div>
+    <div class="demo">
+      <div class="line">
+        <input class="vz-input" placeholder="输入框" style="max-width:200px">
+        <select class="vz-select" aria-label="示例下拉"><option>下拉示例</option></select>
+        <span class="vz-badge vz-badge-success">已完成</span>
+        <span class="vz-badge vz-badge-processing">进行中</span>
+      </div>
+      <div class="line">
+        <button class="vz-btn vz-btn-primary">主按钮</button>
+        <button class="vz-btn vz-btn-secondary">次按钮</button>
+        <button class="vz-btn vz-btn-ghost">行内</button>
+        <span class="vz-tag">标签</span>
+      </div>
+      <div class="mini"><div class="vz-modal vz-modal-sm">
+        <div class="vz-modal-head"><div class="vz-modal-title">浮层观感</div></div>
+        <div class="vz-modal-body">这是弹窗容器的圆角，抽屉同档。</div>
+        <div class="vz-modal-foot"><button class="vz-btn vz-btn-secondary">取消</button><button class="vz-btn vz-btn-primary">确认</button></div>
+      </div></div>
+    </div>
+  </section>
+
+  <section class="opt r2">
+    <div class="opt-head"><span class="opt-no">02</span><span class="opt-name">中圆一档</span></div>
+    <div class="kv"><span>输入 10</span><span>卡片 18</span><span>浮层 24</span><span>徽标 6</span><span>按钮 999</span></div>
+    <div class="demo">
+      <div class="line">
+        <input class="vz-input" placeholder="输入框" style="max-width:200px">
+        <select class="vz-select" aria-label="示例下拉"><option>下拉示例</option></select>
+        <span class="vz-badge vz-badge-success">已完成</span>
+        <span class="vz-badge vz-badge-processing">进行中</span>
+      </div>
+      <div class="line">
+        <button class="vz-btn vz-btn-primary">主按钮</button>
+        <button class="vz-btn vz-btn-secondary">次按钮</button>
+        <button class="vz-btn vz-btn-ghost">行内</button>
+        <span class="vz-tag">标签</span>
+      </div>
+      <div class="mini"><div class="vz-modal vz-modal-sm">
+        <div class="vz-modal-head"><div class="vz-modal-title">浮层观感</div></div>
+        <div class="vz-modal-body">这是弹窗容器的圆角，抽屉同档。</div>
+        <div class="vz-modal-foot"><button class="vz-btn vz-btn-secondary">取消</button><button class="vz-btn vz-btn-primary">确认</button></div>
+      </div></div>
+    </div>
+  </section>
+
+  <section class="opt r3">
+    <div class="opt-head"><span class="opt-no">03</span><span class="opt-name">回到早期手感</span></div>
+    <div class="kv"><span>输入 12</span><span>卡片 20</span><span>浮层 28</span><span>徽标 8</span><span>按钮 999</span></div>
+    <div class="demo">
+      <div class="line">
+        <input class="vz-input" placeholder="输入框" style="max-width:200px">
+        <select class="vz-select" aria-label="示例下拉"><option>下拉示例</option></select>
+        <span class="vz-badge vz-badge-success">已完成</span>
+        <span class="vz-badge vz-badge-processing">进行中</span>
+      </div>
+      <div class="line">
+        <button class="vz-btn vz-btn-primary">主按钮</button>
+        <button class="vz-btn vz-btn-secondary">次按钮</button>
+        <button class="vz-btn vz-btn-ghost">行内</button>
+        <span class="vz-tag">标签</span>
+      </div>
+      <div class="mini"><div class="vz-modal vz-modal-sm">
+        <div class="vz-modal-head"><div class="vz-modal-title">浮层观感</div></div>
+        <div class="vz-modal-body">这是弹窗容器的圆角，抽屉同档。</div>
+        <div class="vz-modal-foot"><button class="vz-btn vz-btn-secondary">取消</button><button class="vz-btn vz-btn-primary">确认</button></div>
+      </div></div>
+    </div>
+  </section>
+
+  <section class="opt r4">
+    <div class="opt-head"><span class="opt-no">04</span><span class="opt-name">明显偏圆</span></div>
+    <div class="kv"><span>输入 14</span><span>卡片 24</span><span>浮层 32</span><span>徽标 12</span><span>按钮 999</span></div>
+    <div class="demo">
+      <div class="line">
+        <input class="vz-input" placeholder="输入框" style="max-width:200px">
+        <select class="vz-select" aria-label="示例下拉"><option>下拉示例</option></select>
+        <span class="vz-badge vz-badge-success">已完成</span>
+        <span class="vz-badge vz-badge-processing">进行中</span>
+      </div>
+      <div class="line">
+        <button class="vz-btn vz-btn-primary">主按钮</button>
+        <button class="vz-btn vz-btn-secondary">次按钮</button>
+        <button class="vz-btn vz-btn-ghost">行内</button>
+        <span class="vz-tag">标签</span>
+      </div>
+      <div class="mini"><div class="vz-modal vz-modal-sm">
+        <div class="vz-modal-head"><div class="vz-modal-title">浮层观感</div></div>
+        <div class="vz-modal-body">这是弹窗容器的圆角，抽屉同档。</div>
+        <div class="vz-modal-foot"><button class="vz-btn vz-btn-secondary">取消</button><button class="vz-btn vz-btn-primary">确认</button></div>
+      </div></div>
+    </div>
+  </section>
+
+  <section class="opt r5">
+    <div class="opt-head"><span class="opt-no">05</span><span class="opt-name">最圆一档，徽标与标签也走胶囊</span></div>
+    <div class="kv"><span>输入 16</span><span>卡片 28</span><span>浮层 36</span><span>徽标胶囊</span><span>按钮 999</span></div>
+    <div class="demo">
+      <div class="line">
+        <input class="vz-input" placeholder="输入框" style="max-width:200px">
+        <select class="vz-select" aria-label="示例下拉"><option>下拉示例</option></select>
+        <span class="vz-badge vz-badge-success">已完成</span>
+        <span class="vz-badge vz-badge-processing">进行中</span>
+      </div>
+      <div class="line">
+        <button class="vz-btn vz-btn-primary">主按钮</button>
+        <button class="vz-btn vz-btn-secondary">次按钮</button>
+        <button class="vz-btn vz-btn-ghost">行内</button>
+        <span class="vz-tag">标签</span>
+      </div>
+      <div class="mini"><div class="vz-modal vz-modal-sm">
+        <div class="vz-modal-head"><div class="vz-modal-title">浮层观感</div></div>
+        <div class="vz-modal-body">这是弹窗容器的圆角，抽屉同档。</div>
+        <div class="vz-modal-foot"><button class="vz-btn vz-btn-secondary">取消</button><button class="vz-btn vz-btn-primary">确认</button></div>
+      </div></div>
+    </div>
+  </section>
+</main>
+<script src="src/vzuit-core.js"></script>
+</body>
+</html>
