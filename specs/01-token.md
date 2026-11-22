@@ -66,7 +66,7 @@
 | `--vz-radius-lg` | 8px | Modal 与 Drawer 内部模块、下拉菜单 |
 | `--vz-radius` | 12px | 业务卡片、KPI 卡 |
 | `--vz-radius-xl` | 16px | 顶层浮层、弹窗主容器 |
-| `--vz-radius-pill` | 999px | 头像、胶囊徽标、开关 |
+| `--vz-radius-pill` | 999px | 头像、胶囊徽标、开关、分段控件 seg 的容器与选项 |
 | `--vz-radius-input` | 4px | 语义别名，与 sm 同档 |
 | `--vz-radius-toast` | 6px | 轻提示 |
 | `--vz-radius-progress` | 999px | 进度条 |

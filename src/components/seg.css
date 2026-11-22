@@ -10,7 +10,8 @@
   padding: 3px;
   background: var(--vz-surface);
   border: 1px solid var(--vz-border);
-  border-radius: var(--vz-radius-sm);
+  /* 胶囊观感，跟按钮一致；内外同档 999px，padding 3px 在胶囊下被高度裁成半圆端 */
+  border-radius: var(--vz-radius-pill);
 }
 .vz-seg button {
   border: 0;
@@ -20,7 +21,7 @@
   font-weight: var(--vz-fw-semibold);
   color: var(--vz-text-tertiary);
   padding: 6px 14px;
-  border-radius: calc(var(--vz-radius-sm) - 3px);
+  border-radius: var(--vz-radius-pill);
   cursor: pointer;
   white-space: nowrap;
   min-width: 0;
