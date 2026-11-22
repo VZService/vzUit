@@ -61,7 +61,8 @@
 |---|---|---|
 | `--vz-radius-xs` | 2px | 行内徽标、代码行内块 |
 | `--vz-radius-sm` | 4px | 输入框、下拉、表格紧凑按钮、代码块 |
-| `--vz-radius-md` | 6px | 按钮、Toast、Popover |
+| `--vz-radius-md` | 6px | Toast、Popover |
+| `--vz-radius-button` | 999px | 按钮，品牌胶囊观感；要收敛成方角只改这一个变量 |
 | `--vz-radius-lg` | 8px | Modal 与 Drawer 内部模块、下拉菜单 |
 | `--vz-radius` | 12px | 业务卡片、KPI 卡 |
 | `--vz-radius-xl` | 16px | 顶层浮层、弹窗主容器 |

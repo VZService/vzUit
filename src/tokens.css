@@ -109,6 +109,8 @@
   --vz-radius-xs: 2px;
   --vz-radius-sm: 4px;
   --vz-radius-md: 6px;
+  /* 按钮圆角单独一个可变点：通用 B 端口径是 6，VZ 系列保持胶囊，改这一个值就整体换风格 */
+  --vz-radius-button: 999px;
   --vz-radius-input: 4px;
   --vz-radius-lg: 8px;
   --vz-radius: 12px;

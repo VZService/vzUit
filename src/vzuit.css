@@ -608,7 +608,7 @@ html.js-ready input:not([type="submit"]):not([type="button"]):not([type="checkbo
 /* .vz-modal-overlay / .vz-modal / 标题 / 主体 的实现在 components/feedback.css，
    这里只补 VZAlert 与 VZConfirm 运行时动态拼出来的动作区与按钮类。 */
 .vz-modal-actions{display:flex;justify-content:flex-end;gap:var(--vz-space-2);padding:var(--vz-space-3) var(--vz-space-5) var(--vz-space-5);border-top:1px solid var(--vz-hairline);}
-.vz-modal-btn{min-width:80px;height:var(--vz-control-h);padding:0 var(--vz-space-4);border:1px solid var(--vz-border-1);border-radius:var(--vz-radius-md);background:var(--vz-bg-subtle);color:var(--vz-text);font-family:var(--vz-font-ui);font-size:var(--vz-type-body-size);font-weight:var(--vz-fw-medium);cursor:pointer;transition:background-color var(--vz-dur-fast),border-color var(--vz-dur-fast),box-shadow var(--vz-dur-fast);}
+.vz-modal-btn{min-width:80px;height:var(--vz-control-h);padding:0 var(--vz-space-4);border:1px solid var(--vz-border-1);border-radius:var(--vz-radius-button);background:var(--vz-bg-subtle);color:var(--vz-text);font-family:var(--vz-font-ui);font-size:var(--vz-type-body-size);font-weight:var(--vz-fw-medium);cursor:pointer;transition:background-color var(--vz-dur-fast),border-color var(--vz-dur-fast),box-shadow var(--vz-dur-fast);}
 .vz-modal-btn:hover{background:var(--vz-surface-hover);border-color:var(--vz-border-3);}
 .vz-modal-btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--vz-bg),0 0 0 4px var(--vz-border-focus);}
 .vz-modal-btn.primary{background:var(--vz-primary);border-color:transparent;color:#ffffff;}

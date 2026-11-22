@@ -23,7 +23,7 @@
   height: var(--vz-control-h);
   padding: 0 var(--vz-space-4);
   border: 1px solid transparent;
-  border-radius: var(--vz-radius-md);
+  border-radius: var(--vz-radius-button);
   background: transparent;
   color: var(--vz-text);
   font-family: var(--vz-font-ui);
