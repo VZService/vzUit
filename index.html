@@ -908,7 +908,11 @@
       document.querySelectorAll('[data-demo-open]').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var el = document.getElementById(map[btn.getAttribute('data-demo-open')]);
-          if (el) el.classList.add('show');
+          if (!el) return;
+          /* 抽屉的位移在 .vz-drawer 自己身上，遮罩只是 scrim，两层都得加 show */
+          el.classList.add('show');
+          var panel = el.querySelector('.vz-drawer');
+          if (panel) panel.classList.add('show');
         });
       });
       /* 危险层（data-strict）点遮罩不关，抖一下告诉人退不出去；Esc 同理 */
@@ -920,14 +924,19 @@
         box.classList.add('is-shake');
         setTimeout(function () { box.classList.remove('is-shake'); }, 460);
       }
+      function hide(el) {
+        el.classList.remove('show');
+        var panel = el.querySelector('.vz-drawer');
+        if (panel) panel.classList.remove('show');
+      }
       function closeOrShake(el) {
         if (el.getAttribute('data-strict') === 'true') { shake(el); return; }
-        el.classList.remove('show');
+        hide(el);
       }
       layer.addEventListener('click', function (e) {
         var target = e.target.closest('.vz-modal-overlay, .vz-drawer-overlay');
         if (!target) return;
-        if (e.target.hasAttribute('data-demo-close')) { target.classList.remove('show'); return; }
+        if (e.target.hasAttribute('data-demo-close')) { hide(target); return; }
         if (e.target === target) closeOrShake(target);
       });
       document.addEventListener('keydown', function (e) {
