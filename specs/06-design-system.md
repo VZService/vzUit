@@ -40,6 +40,12 @@
 `select`、`checkbox`、`radio`、开关、`range`、`file`、`number` 的上下箭头、`search` 的清除按钮、
 日期与时间的图标、`progress`、`dialog`、滚动条、自动填充的淡黄底、`::selection` 与占位符。
 
+下拉要特别注意：原生 select 的**展开面板**由浏览器绘制，CSS 改不到，深色主题下会弹出浅灰系统列表。
+所以下拉必须走自绘列表：给 select 加 `class="vz-select"` 或 `data-vz-select`，引 `vzuit-core.js` 后自动升级成
+`触发器 + 列表` 结构，原生 select 收进容器只当取值载体，表单提交、reset、disabled 行为不变，
+键盘（上下、Home/End、Enter、Esc）与 ARIA（combobox / listbox / option）由 JS 接管。
+不引 core 的站点不许用裸 select 冒充已完成。
+
 三条规矩：
 
 1. 新控件先在 `controls.css` 里加类，再来页面用，不许在业务 CSS 里就地 `appearance: none`。

@@ -220,6 +220,115 @@ textarea { resize: vertical; }
 .vz-select-wrap.is-open::after { transform: translateY(-50%) rotate(180deg); }
 .vz-select-wrap > .vz-select { padding-right: var(--vz-space-8); }
 
+/* 自定义下拉：原生 select 的展开列表由浏览器绘制，深色主题下会弹出浅灰系统面板，
+   与站内完全不是一套，且无法用 CSS 改。这里把原生 select 收进容器只当取值载体，
+   面板换成自绘列表，样式、键盘、ARIA 全部自己接管。JS 见 vzuit-core.js 的 selectInit。
+   结构由 JS 生成：
+     <div class="vz-selectbox"><select class="vz-select" data-vz-select>…</select>
+       <button class="vz-select-trigger"><span class="vz-select-value">…</span></button>
+       <ul class="vz-listbox" role="listbox"><li class="vz-option" role="option">…</li></ul></div> */
+.vz-selectbox { position: relative; width: 100%; }
+.vz-selectbox > select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+.vz-select-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--vz-space-2);
+  width: 100%;
+  min-height: var(--vz-control-h);
+  padding: 0 var(--vz-space-6) 0 var(--vz-space-3);
+  background: var(--vz-bg-subtle);
+  border: 1px solid var(--vz-border-1);
+  border-radius: var(--vz-radius-sm);
+  color: var(--vz-text);
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-type-body-line);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--vz-dur-fast), background-color var(--vz-dur-fast), box-shadow var(--vz-dur-fast);
+}
+.vz-select-trigger:hover { border-color: var(--vz-border-2); }
+.vz-select-trigger:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--vz-bg), 0 0 0 4px var(--vz-border-focus); }
+.vz-select-trigger[disabled] { background: var(--vz-bg-disabled); color: var(--vz-text-disabled); cursor: not-allowed; }
+.vz-selectbox.is-open .vz-select-trigger { border-color: var(--vz-primary); box-shadow: 0 0 0 3px var(--vz-primary-subtle); }
+.vz-select-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vz-select-trigger::after {
+  content: "";
+  position: absolute;
+  right: var(--vz-space-3);
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translateY(-50%);
+  background: var(--vz-text-tertiary);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>") center / contain no-repeat;
+  pointer-events: none;
+  transition: transform var(--vz-dur-fast);
+}
+.vz-select-trigger { position: relative; }
+.vz-selectbox.is-open .vz-select-trigger::after { transform: translateY(-50%) rotate(180deg); }
+
+.vz-listbox {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + var(--vz-space-1));
+  z-index: var(--vz-z-drawer);
+  display: none;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: var(--vz-space-1);
+  background: var(--vz-popover-bg);
+  border: 1px solid var(--vz-border-1);
+  border-radius: var(--vz-radius-lg);
+  box-shadow: var(--vz-shadow-popover);
+  overscroll-behavior: contain;
+}
+.vz-selectbox.is-open .vz-listbox { display: block; }
+/* 下方空间不够时翻到触发器上方，JS 只加这个类 */
+.vz-listbox.is-up { top: auto; bottom: calc(100% + var(--vz-space-1)); }
+.vz-option {
+  display: flex;
+  align-items: center;
+  gap: var(--vz-space-2);
+  padding: var(--vz-space-2) var(--vz-space-3);
+  border-radius: var(--vz-radius-sm);
+  font-size: var(--vz-type-body-size);
+  line-height: var(--vz-type-body-line);
+  color: var(--vz-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.vz-option:hover,
+.vz-option.is-active { background: var(--vz-surface-hover); color: var(--vz-text); }
+.vz-option[aria-selected="true"] { color: var(--vz-brand-from); font-weight: var(--vz-fw-medium); }
+.vz-option[aria-selected="true"]::after {
+  content: "";
+  flex: none;
+  width: 12px;
+  height: 12px;
+  margin-left: auto;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6L9 17l-5-5'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6L9 17l-5-5'/></svg>") center / contain no-repeat;
+}
+.vz-option[aria-disabled="true"] { color: var(--vz-text-disabled); cursor: not-allowed; background: transparent; }
+
 /* 复选框：方块自绘，勾用遮罩画，选中才显形 */
 .vz-check {
   display: inline-flex;

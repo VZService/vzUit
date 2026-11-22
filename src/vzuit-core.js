@@ -617,10 +617,181 @@
     for (var i = 0; i < list.length; i++) rangeBind(list[i]);
   }
 
+  /* 自定义下拉：原生 select 的展开面板由浏览器画，改不了样式，深色下会弹浅灰系统列表。
+     这里保留原生 select 当取值载体（表单提交、reset、disabled 全部照旧），
+     在它旁边补一个自绘触发器与列表，键盘与 ARIA 自己接管。
+     用法：给 select 加 class="vz-select" 或 data-vz-select，引 core 后自动升级。 */
+  function selectSync(sel, box) {
+    var trigger = box.querySelector('.vz-select-trigger');
+    var value = box.querySelector('.vz-select-value');
+    var options = box.querySelectorAll('.vz-option');
+    var idx = sel.selectedIndex;
+    value.textContent = idx >= 0 ? sel.options[idx].text : '';
+    for (var i = 0; i < options.length; i++) {
+      options[i].setAttribute('aria-selected', i === idx ? 'true' : 'false');
+    }
+    if (sel.disabled) trigger.disabled = true;
+  }
+
+  function selectOpen(sel, box) {
+    var listbox = box.querySelector('.vz-listbox');
+    var options = box.querySelectorAll('.vz-option');
+    box.classList.add('is-open');
+    box.querySelector('.vz-select-trigger').setAttribute('aria-expanded', 'true');
+    var active = listbox.querySelector('.is-active') || listbox.querySelector('[aria-selected="true"]');
+    if (!active && options.length) active = options[0];
+    if (active) {
+      for (var k = 0; k < options.length; k++) options[k].classList.remove('is-active');
+      active.classList.add('is-active');
+      listbox.setAttribute('aria-activedescendant', active.id);
+    }
+    /* 下方放不下就往上翻，面板高度按 max-height 估 */
+    var rect = box.getBoundingClientRect();
+    var space = w.innerHeight - rect.bottom;
+    listbox.classList.toggle('is-up', space < 260 && rect.top > space);
+  }
+
+  function selectClose(box) {
+    box.classList.remove('is-open');
+    box.querySelector('.vz-select-trigger').setAttribute('aria-expanded', 'false');
+  }
+
+  function selectPick(sel, box, option) {
+    if (!option || option.getAttribute('aria-disabled') === 'true') return;
+    var idx = parseInt(option.getAttribute('data-index'), 10);
+    if (idx !== sel.selectedIndex) {
+      sel.selectedIndex = idx;
+      sel.dispatchEvent(new Event('input', { bubbles: true }));
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    selectSync(sel, box);
+    selectClose(box);
+    box.querySelector('.vz-select-trigger').focus();
+  }
+
+  function selectUpgrade(sel, seed) {
+    if (sel.getAttribute('data-vz-ready') === '1') return;
+    sel.setAttribute('data-vz-ready', '1');
+
+    var box = document.createElement('div');
+    box.className = 'vz-selectbox';
+    sel.parentNode.insertBefore(box, sel);
+    box.appendChild(sel);
+
+    var trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'vz-select-trigger';
+    trigger.setAttribute('aria-haspopup', 'listbox');
+    trigger.setAttribute('aria-expanded', 'false');
+    if (sel.getAttribute('aria-label')) trigger.setAttribute('aria-label', sel.getAttribute('aria-label'));
+    var value = document.createElement('span');
+    value.className = 'vz-select-value';
+    trigger.appendChild(value);
+
+    var listbox = document.createElement('ul');
+    listbox.className = 'vz-listbox';
+    listbox.setAttribute('role', 'listbox');
+    listbox.id = 'vz-listbox-' + (seed || Math.random().toString(36).slice(2, 8));
+    trigger.setAttribute('aria-controls', listbox.id);
+
+    for (var i = 0; i < sel.options.length; i++) {
+      var opt = sel.options[i];
+      var li = document.createElement('li');
+      li.className = 'vz-option';
+      li.id = listbox.id + '-opt-' + i;
+      li.setAttribute('role', 'option');
+      li.setAttribute('data-index', String(i));
+      li.textContent = opt.text;
+      if (opt.disabled) li.setAttribute('aria-disabled', 'true');
+      listbox.appendChild(li);
+    }
+
+    box.appendChild(trigger);
+    box.appendChild(listbox);
+    selectSync(sel, box);
+
+    trigger.addEventListener('click', function () {
+      if (sel.disabled) return;
+      if (box.classList.contains('is-open')) selectClose(box);
+      else selectOpen(sel, box);
+    });
+
+    trigger.addEventListener('keydown', function (e) {
+      var options = listbox.querySelectorAll('.vz-option');
+      var current = listbox.querySelector('.is-active');
+      var at = current ? Array.prototype.indexOf.call(options, current) : -1;
+      var key = e.key;
+      if (key === 'ArrowDown' || key === 'ArrowUp') {
+        e.preventDefault();
+        if (!box.classList.contains('is-open')) { selectOpen(sel, box); return; }
+        var next = key === 'ArrowDown' ? at + 1 : at - 1;
+        if (next < 0) next = options.length - 1;
+        if (next >= options.length) next = 0;
+        for (var n = 0; n < options.length; n++) options[n].classList.remove('is-active');
+        options[next].classList.add('is-active');
+        listbox.setAttribute('aria-activedescendant', options[next].id);
+        options[next].scrollIntoView({ block: 'nearest' });
+      } else if (key === 'Home' || key === 'End') {
+        if (!box.classList.contains('is-open')) return;
+        e.preventDefault();
+        var target = key === 'Home' ? options[0] : options[options.length - 1];
+        for (var m = 0; m < options.length; m++) options[m].classList.remove('is-active');
+        target.classList.add('is-active');
+      } else if (key === 'Enter' || key === ' ') {
+        e.preventDefault();
+        if (box.classList.contains('is-open')) selectPick(sel, box, current || listbox.querySelector('[aria-selected="true"]'));
+        else selectOpen(sel, box);
+      } else if (key === 'Escape') {
+        if (box.classList.contains('is-open')) { e.preventDefault(); selectClose(box); }
+      } else if (key === 'Tab') {
+        selectClose(box);
+      }
+    });
+
+    listbox.addEventListener('click', function (e) {
+      var option = e.target.closest('.vz-option');
+      if (option) selectPick(sel, box, option);
+    });
+
+    listbox.addEventListener('mousemove', function (e) {
+      var option = e.target.closest('.vz-option');
+      if (!option) return;
+      var options = listbox.querySelectorAll('.vz-option');
+      for (var q = 0; q < options.length; q++) options[q].classList.remove('is-active');
+      option.classList.add('is-active');
+    });
+
+    /* 点外面关掉，只挂一次 document 监听，靠事件冒泡判断 */
+    if (!w.__vzSelectBound) {
+      w.__vzSelectBound = true;
+      document.addEventListener('click', function (e) {
+        var boxes = document.querySelectorAll('.vz-selectbox.is-open');
+        for (var b = 0; b < boxes.length; b++) {
+          if (!boxes[b].contains(e.target)) selectClose(boxes[b]);
+        }
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        var boxes = document.querySelectorAll('.vz-selectbox.is-open');
+        for (var b = 0; b < boxes.length; b++) {
+          selectClose(boxes[b]);
+          boxes[b].querySelector('.vz-select-trigger').focus();
+        }
+      });
+    }
+  }
+
+  function selectInit(root) {
+    var scope = root || document;
+    var list = scope.querySelectorAll('select.vz-select, select[data-vz-select]');
+    for (var i = 0; i < list.length; i++) selectUpgrade(list[i], String(i));
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { rangeInit(); });
+    document.addEventListener('DOMContentLoaded', function () { rangeInit(); selectInit(); });
   } else {
     rangeInit();
+    selectInit();
   }
 
   w.VZCore = {
@@ -640,6 +811,7 @@
     renderShell: renderShell,
     rangeInit: rangeInit,
     rangeBind: rangeBind,
+    selectInit: selectInit,
     MODAL_MS: MODAL_MS
   };
 

@@ -535,20 +535,6 @@
       </div>
 
       <div class="state-group">
-        <div class="sg-title">按钮 Button</div>
-        <div class="state-row">
-          <div class="state-cell"><div class="btn btn-primary">主按钮</div><div class="sc-lab">默认</div></div>
-          <div class="state-cell"><div class="btn btn-primary-hover">主按钮</div><div class="sc-lab">悬停</div></div>
-          <div class="state-cell"><div class="btn btn-primary-active">主按钮</div><div class="sc-lab">点击</div></div>
-          <div class="state-cell"><div class="btn btn-primary-disabled">主按钮</div><div class="sc-lab">禁用</div></div>
-          <div class="state-cell"><div class="btn btn-secondary">次按钮</div><div class="sc-lab">默认</div></div>
-          <div class="state-cell"><div class="btn btn-secondary-hover">次按钮</div><div class="sc-lab">悬停</div></div>
-          <div class="state-cell"><div class="btn btn-success">成功按钮</div><div class="sc-lab">默认</div></div>
-          <div class="state-cell"><div class="btn btn-text">文字按钮</div><div class="sc-lab">默认</div></div>
-        </div>
-      </div>
-
-      <div class="state-group">
         <div class="sg-title">输入框 Input</div>
         <div class="state-row">
           <div class="state-cell"><div class="field"><span class="field-ph">请输入内容</span></div><div class="sc-lab">默认</div></div>
@@ -611,7 +597,7 @@
         </div>
       </div>
       <div class="state-group">
-        <div class="sg-title">按钮 Button（五档变体 · 六种状态，悬停与按下直接点着看）</div>
+        <div class="sg-title">按钮 Button（五档变体 · 六种状态，一次看全）</div>
         <div class="state-row">
           <div class="state-cell"><button class="vz-btn vz-btn-primary">保存改动</button><div class="sc-lab">primary 默认</div></div>
           <div class="state-cell"><button class="vz-btn vz-btn-secondary">取消</button><div class="sc-lab">secondary</div></div>
@@ -622,10 +608,7 @@
           <div class="state-cell"><button class="vz-btn vz-btn-primary is-loading">保存改动</button><div class="sc-lab">loading 锁死</div></div>
           <div class="state-cell"><button class="vz-btn vz-btn-primary">提交</button><div class="sc-lab">focus 用 Tab 看</div></div>
         </div>
-      </div>
 
-      <div class="state-group">
-        <div class="sg-title">按钮中间态 Button States（默认、悬停、按下、键盘焦点、禁用、加载，六态一次看全）</div>
         <div class="state-row">
         <div class="state-cell"><button class="vz-btn vz-btn-primary">提交</button><div class="sc-lab">default</div></div>
         <div class="state-cell"><button class="vz-btn vz-btn-primary" data-vz-state="hover">提交</button><div class="sc-lab">hover</div></div>
@@ -674,16 +657,14 @@
             <input class="vz-input" placeholder="例如 S12 冬季赛">
             <span class="vz-field-hint">最多 24 字，对外展示用</span>
           </label>
-          <label class="vz-field">
+          <div class="vz-field">
             <span class="vz-label-top">比赛模式</span>
-            <span class="vz-select-wrap">
-              <select class="vz-select">
-                <option>单人排位</option>
-                <option>双人组队</option>
-                <option>四人混战</option>
-              </select>
-            </span>
-          </label>
+            <select class="vz-select" data-vz-select aria-label="比赛模式">
+              <option>单人排位</option>
+              <option>双人组队</option>
+              <option>四人混战</option>
+            </select>
+          </div>
           <div class="vz-field">
             <span class="vz-label-top">展示项</span>
             <div class="vz-check-group">
