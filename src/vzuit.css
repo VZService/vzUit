@@ -696,24 +696,28 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   box-shadow: 0 0 0 3px rgba(167,139,250,0.22);
 }
 
-/* P2-4：动效偏好，前庭敏感用户退路 */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  .post-card:hover, .project-card:hover, .blog-card:hover { transform: none; }
-  /* 加载反馈是状态指示而非装饰：减弱动效下保留转圈，否则看不到「正在加载」 */
-  .loading-screen svg { animation-duration: 1s !important; animation-iteration-count: infinite !important; }
-  .loading-spinner { animation-duration: .7s !important; animation-iteration-count: infinite !important; }
-  .btn-spinner { animation-duration: .6s !important; animation-iteration-count: infinite !important; }
+/* P2-4：动效偏好退路，站点显式开启：在 html 上加 data-vz-reduce-motion="true" 才降级。
+   不自动跟随 prefers-reduced-motion：关了 Windows 窗口动画（注册表 WindowMetrics\MinAnimate=0）
+   的用户会被浏览器判成 reduce，动效会全部失效，所以改由站点主动声明。 */
+html[data-vz-reduce-motion="true"] *,
+html[data-vz-reduce-motion="true"] *::before,
+html[data-vz-reduce-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
 }
+html[data-vz-reduce-motion="true"] .post-card:hover,
+html[data-vz-reduce-motion="true"] .project-card:hover,
+html[data-vz-reduce-motion="true"] .blog-card:hover { transform: none; }
+/* 加载反馈是状态指示而非装饰：减弱动效下保留转圈，否则看不到「正在加载」 */
+html[data-vz-reduce-motion="true"] .loading-screen svg { animation-duration: 1s !important; animation-iteration-count: infinite !important; }
+html[data-vz-reduce-motion="true"] .loading-spinner { animation-duration: .7s !important; animation-iteration-count: infinite !important; }
+html[data-vz-reduce-motion="true"] .btn-spinner { animation-duration: .6s !important; animation-iteration-count: infinite !important; }
 
 /* 尊重系统指针设置：仅真触屏设备（无精确指针）回退系统光标。
-   不要把 prefers-reduced-motion 写进来：关窗口动画的用户（注册表 WindowMetrics\MinAnimate=0）
-   会被浏览器判成 reduce，结果整站光标被打回 auto、自定义 SVG 光标连请求都不发。
-   减弱动效下加载圈的静止问题已在上方媒体查询内单独回补，不依赖这条规则。 */
+   不要把 prefers-reduced-motion 写进来：关窗口动画的用户会被浏览器判成 reduce，
+   结果整站光标被打回 auto、自定义 SVG 光标连请求都不发。
+   动效降级也同理走显式的 data-vz-reduce-motion，不依赖媒体查询。 */
 @media (pointer: coarse) {
   html.js-ready, html.js-ready *, html.js-ready [onclick] { cursor: auto; }
 }

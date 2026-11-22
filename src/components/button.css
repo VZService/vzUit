@@ -195,6 +195,12 @@
 .vz-btn-group { display: inline-flex; align-items: center; gap: var(--vz-space-2); flex-wrap: wrap; }
 .vz-btn-group.is-end { margin-left: auto; }
 
-@media (prefers-reduced-motion: reduce) {
-  .vz-btn, .btn-primary, .btn-secondary, .btn-danger, .btn-login, .btn-edit, .btn-delete { transition-duration: .01ms; }
-}
+/* 减弱动效改由站点显式开启：html 上加 data-vz-reduce-motion="true" 才降级。
+   不自动跟随系统偏好，因为关了 Windows 窗口动画会被判成 reduce，动效会全部失效。 */
+[data-vz-reduce-motion="true"] .vz-btn,
+[data-vz-reduce-motion="true"] .btn-primary,
+[data-vz-reduce-motion="true"] .btn-secondary,
+[data-vz-reduce-motion="true"] .btn-danger,
+[data-vz-reduce-motion="true"] .btn-login,
+[data-vz-reduce-motion="true"] .btn-edit,
+[data-vz-reduce-motion="true"] .btn-delete { transition-duration: .01ms; }

@@ -125,10 +125,8 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .vz-toast,
-  .vz-toast.leaving {
-    transform: none;
-    transition-duration: 0.01ms;
-  }
+[data-vz-reduce-motion="true"] .vz-toast,
+[data-vz-reduce-motion="true"] .vz-toast.leaving {
+  transform: none;
+  transition-duration: 0.01ms;
 }

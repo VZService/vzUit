@@ -140,9 +140,7 @@
   75% { transform: translateX(-2px); }
 }
 .vz-modal.is-shake { animation: vz-modal-shake .42s cubic-bezier(.36,.07,.19,.97); }
-@media (prefers-reduced-motion: reduce) {
-  .vz-modal.is-shake { animation-duration: .01ms; }
-}
+[data-vz-reduce-motion="true"] .vz-modal.is-shake { animation-duration: .01ms; }
 
 /* 纯查看类浮层才允许点遮罩关闭，用属性显式声明，默认不放行 */
 .vz-modal-overlay[data-mask-closable="true"] { cursor: pointer; }

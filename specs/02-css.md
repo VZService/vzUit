@@ -56,7 +56,7 @@
 
 优先动 `transform` 与 `opacity`，不动 `width` `height` `top` `left`。动效时长统一走 `--vz-dur-*`。
 
-尊重系统偏好：`@media (prefers-reduced-motion: reduce)` 下把过渡时长压到 0。
+动效降级由站点显式开启：在 `html` 上加 `data-vz-reduce-motion="true"` 才把过渡压到 0，不加就保留全部动效。不自动跟随 `prefers-reduced-motion`，因为关了 Windows 窗口动画（注册表 `MinAnimate=0`）的用户会被浏览器判成 reduce，跟系统偏好导致动效全失效，这是误判不是用户本意。加载反馈（转圈）在降级时仍保留，它是状态指示不是装饰。
 
 ## 无障碍
 
