@@ -93,7 +93,7 @@
   padding: 0;
   border: 0;
   background: none;
-  border-radius: var(--vz-radius-sm);
+  border-radius: var(--vz-radius-xs);
   color: var(--vz-text-tertiary);
   cursor: pointer;
   transition: color var(--vz-dur-fast), background var(--vz-dur-fast);

@@ -59,17 +59,28 @@
 
 | 变量 | 值 | 用途 |
 |---|---|---|
-| `--vz-radius-xs` | 2px | 行内徽标、代码行内块 |
-| `--vz-radius-sm` | 4px | 输入框、下拉、表格紧凑按钮、代码块 |
-| `--vz-radius-md` | 6px | Toast、Popover |
-| `--vz-radius-button` | 999px | 按钮，品牌胶囊观感；要收敛成方角只改这一个变量 |
-| `--vz-radius-lg` | 8px | Modal 与 Drawer 内部模块、下拉菜单 |
-| `--vz-radius` | 12px | 业务卡片、KPI 卡 |
-| `--vz-radius-xl` | 16px | 顶层浮层、弹窗主容器 |
-| `--vz-radius-pill` | 999px | 头像、胶囊徽标、开关、分段控件 seg 的容器与选项 |
-| `--vz-radius-input` | 4px | 语义别名，与 sm 同档 |
-| `--vz-radius-toast` | 6px | 轻提示 |
+| `--vz-radius-none` | 0 | 贴边容器，成组拼接时中间不留缝 |
+| `--vz-radius-2xs` | 4px | 14 到 16px 见方的微元素：勾选框、行内色块、标签上的关闭 |
+| `--vz-radius-xs` | 8px | 20 到 22px：徽标、提示条关闭 |
+| `--vz-radius-sm` | 12px | 28 到 32px 控件：下拉项、分页、文件区、卡片式选项 |
+| `--vz-radius-input` | 14px | 输入框、选择器触发器、输入组 |
+| `--vz-radius-md` | 16px | 气泡确认、横幅提示、Tooltip |
+| `--vz-radius` | 20px | 业务卡片、KPI 卡 |
+| `--vz-radius-lg` | 24px | 面板、下拉菜单、表格容器、批量条、弹窗内模块 |
+| `--vz-radius-xl` | 32px | 弹窗、抽屉、原生 dialog |
+| `--vz-radius-2xl` | 40px | 顶层浮层 |
+| `--vz-radius-toast` | 16px | 轻提示 |
+| `--vz-radius-button` | 999px | 按钮，品牌胶囊观感 |
+| `--vz-radius-tag` | 999px | 标签 |
 | `--vz-radius-progress` | 999px | 进度条 |
+| `--vz-radius-pill` | 999px | 头像、胶囊徽标、开关轨道、分段容器 |
+
+档位跟元素的短边挂钩，不跟组件名挂钩：短边 16 走 2xs、20 到 22 走 xs、28 到 32 走 sm，
+容器按容器尺度取。同一个组件在不同密度下可以换档，所以按钮只认 `--vz-radius-button`。
+
+两档形状：默认档是圆角，整站偏柔；`<html data-shape="sharp">` 切方形档，同一批变量压到
+2 到 8px 的近直角。形状档只翻矩形语义那批，`pill` 与 `progress` 不动，开关轨道与分段控件
+在方形档下单独压一次。档位切换只改根元素属性，组件里不出现 `data-shape` 判断。
 
 同心圆角公式：外圆角等于内圆角加内边距。
 

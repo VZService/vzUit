@@ -73,7 +73,7 @@
   height: 20px;
   padding: 0 var(--vz-space-2);
   border: 1px solid transparent;
-  border-radius: var(--vz-radius-sm);
+  border-radius: var(--vz-radius-xs);
   font-size: var(--vz-type-caption-size);
   line-height: 1;
   font-weight: var(--vz-fw-medium);
@@ -139,7 +139,7 @@
   gap: var(--vz-space-1);
   height: 22px;
   padding: 0 var(--vz-space-2);
-  border-radius: var(--vz-radius-sm);
+  border-radius: var(--vz-radius-tag);
   border: 1px solid var(--vz-border-1);
   background: var(--vz-bg-subtle);
   color: var(--vz-text-secondary);
@@ -157,7 +157,7 @@
   background: transparent;
   color: var(--vz-text-tertiary);
   cursor: pointer;
-  border-radius: var(--vz-radius-xs);
+  border-radius: var(--vz-radius-2xs);
 }
 .vz-tag-close:hover { color: var(--vz-danger); background: var(--vz-danger-bg); }
 

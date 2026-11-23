@@ -104,19 +104,23 @@
   --vz-space-7: 48px;
   --vz-space-8: 64px;
 
-  /* 圆角阶梯，按组件语义分配，禁手写魔术值 */
+  /* 圆角阶梯，按组件语义分配，禁手写魔术值。默认档是「圆角」，整体偏柔；
+     整站要直角风格在 html 上加 data-shape="sharp"，本文件末尾的覆盖块会把同一批
+     变量压到近直角，组件不用改。同心圆角公式：外圆角 = 内圆角 + 内边距，嵌套减一档。 */
   --vz-radius-none: 0;
-  --vz-radius-xs: 2px;
-  --vz-radius-sm: 4px;
-  --vz-radius-md: 6px;
-  /* 按钮圆角单独一个可变点：通用 B 端口径是 6，VZ 系列保持胶囊，改这一个值就整体换风格 */
+  --vz-radius-2xs: 4px;
+  --vz-radius-xs: 8px;
+  --vz-radius-sm: 12px;
+  /* 输入框圆角单独一个可变点：输入框、选择器触发器、输入组共用，改这一个值就整体换手感 */
+  --vz-radius-input: 14px;
+  --vz-radius-md: 16px;
+  --vz-radius: 20px;
+  /* 按钮圆角单独一个可变点：通用 B 端口径是 4px，VZ 系列保持胶囊，改这一个值就整体换风格 */
   --vz-radius-button: 999px;
-  --vz-radius-input: 4px;
-  --vz-radius-lg: 8px;
-  --vz-radius: 12px;
-  --vz-radius-xl: 16px;
-  --vz-radius-2xl: 16px;
-  --vz-radius-toast: 6px;
+  --vz-radius-lg: 24px;
+  --vz-radius-xl: 32px;
+  --vz-radius-2xl: 40px;
+  --vz-radius-toast: 16px;
   --vz-radius-progress: 999px;
   --vz-radius-tag: 999px;
   --vz-radius-pill: 999px;
@@ -357,3 +361,25 @@
     --vz-surface-hover: var(--vz-palette-slate-100);
   }
 }
+
+/* 形状档：不写 data-shape 与写 rounded 都是圆角档，只有 sharp 会翻。
+   只覆盖矩形语义那批，pill 与 progress 不动——头像是圆的这件事跟盒子风格无关。
+   开关轨道与分段控件靠 pill 取形，不在这套阶梯里，所以单独压一次。 */
+:root[data-shape="sharp"],
+[data-shape="sharp"] {
+  --vz-radius-2xs: 2px;
+  --vz-radius-xs: 2px;
+  --vz-radius-sm: 4px;
+  --vz-radius-input: 4px;
+  --vz-radius-md: 4px;
+  --vz-radius: 4px;
+  --vz-radius-button: 4px;
+  --vz-radius-lg: 6px;
+  --vz-radius-xl: 8px;
+  --vz-radius-2xl: 8px;
+  --vz-radius-toast: 4px;
+  --vz-radius-tag: 4px;
+}
+[data-shape="sharp"] .vz-switch-track { border-radius: var(--vz-radius-sm); }
+[data-shape="sharp"] .vz-seg { border-radius: var(--vz-radius-sm); }
+[data-shape="sharp"] .vz-seg button { border-radius: var(--vz-radius-2xs); }

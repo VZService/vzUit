@@ -50,7 +50,7 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 :root:not([data-theme="light"]) input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); }
 input[type="color"] { padding: 0; border: 0; background: transparent; }
 input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-input[type="color"]::-webkit-color-swatch { border: 1px solid var(--vz-border); border-radius: var(--vz-radius-sm); }
+input[type="color"]::-webkit-color-swatch { border: 1px solid var(--vz-border); border-radius: var(--vz-radius-xs); }
 
 /* 选中文本与占位符也用品牌色，不出现浏览器默认蓝 */
 ::selection { background: var(--vz-primary-subtle); color: var(--vz-text); }
@@ -121,7 +121,7 @@ textarea { resize: vertical; }
   padding: 0 var(--vz-space-3);
   background: var(--vz-bg-subtle);
   border: 1px solid var(--vz-border-1);
-  border-radius: var(--vz-radius-sm);
+  border-radius: var(--vz-radius-input);
   color: var(--vz-text);
   font-size: var(--vz-type-body-size);
   line-height: var(--vz-type-body-line);
@@ -160,7 +160,7 @@ textarea { resize: vertical; }
   padding: 0 var(--vz-space-3);
   background: var(--vz-bg-subtle);
   border: 1px solid var(--vz-border-1);
-  border-radius: var(--vz-radius-sm);
+  border-radius: var(--vz-radius-input);
   transition: border-color var(--vz-dur-fast), box-shadow var(--vz-dur-fast);
 }
 .vz-input-group:focus-within {
@@ -245,7 +245,7 @@ textarea { resize: vertical; }
   padding: 0 var(--vz-space-6) 0 var(--vz-space-3);
   background: var(--vz-bg-subtle);
   border: 1px solid var(--vz-border-1);
-  border-radius: var(--vz-radius-sm);
+  border-radius: var(--vz-radius-input);
   color: var(--vz-text);
   font-size: var(--vz-type-body-size);
   line-height: var(--vz-type-body-line);
@@ -349,7 +349,7 @@ textarea { resize: vertical; }
   height: 16px;
   margin-top: 2px;
   border: 1px solid var(--vz-border-3);
-  border-radius: var(--vz-radius-sm);
+  border-radius: var(--vz-radius-2xs);
   background: var(--vz-bg-subtle);
   cursor: pointer;
   transition: background-color var(--vz-dur-fast), border-color var(--vz-dur-fast), box-shadow var(--vz-dur-fast);
@@ -420,7 +420,7 @@ input[type="radio"].vz-radio {
   height: 16px;
   flex: none;
   border: 1px solid var(--vz-border-3);
-  border-radius: var(--vz-radius-sm);
+  border-radius: var(--vz-radius-2xs);
   background: var(--vz-bg-subtle);
   cursor: pointer;
   transition: background-color var(--vz-dur-fast), border-color var(--vz-dur-fast);
